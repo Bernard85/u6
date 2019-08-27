@@ -653,3 +653,43 @@
        endif;
        tree_link2Brothers(link.prev:link.next);
      p                 e
+      //‚--------------------------------------------------------------------
+      //‚dealloc a link
+      //‚--------------------------------------------------------------------
+     ptree_dealloc     b                   export
+     d tree_dealloc    pi
+     d  lLink                          *
+     d  pDeallocate                    *   const procptr options(*nopass)
+     d  Deallocate     pr                  extproc(pDeallocate)
+     d  pItem                          *
+     d  pItem          s               *
+       if lLink=*null;
+         return;
+       endIf;
+       tree_dealloc2(lLink:pDeallocate);
+       if pDeallocate<>*null;
+         deallocate(lLink);
+       endIf;
+       pItem=tree_getItem(lLink);
+       if pItem<>*null;
+         dealloc(en) pItem;
+       endIf;
+       dealloc(en) lLink;
+     p                 e
+      //‚--------------------------------------------------------------------
+      //‚dealloc a link (part 2)
+      //‚--------------------------------------------------------------------
+     ptree_dealloc2    b
+     d tree_dealloc2   pi
+     d  lLink                          *
+     d  pDeallocate                    *   const procptr
+      *
+     d  lCurrent       s               *
+     d  lNext          s               *
+       lCurrent=tree_getFirst(lLink);
+       dow lCurrent<>*null;
+         lNext=tree_getNext(lCurrent);
+         tree_dealloc(lCurrent:pDeallocate);
+         lCurrent=lNext;
+       endDo;
+     p                 e

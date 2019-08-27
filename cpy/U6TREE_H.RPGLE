@@ -101,3 +101,7 @@
       //‚untied a link
      d tree_unTied     pr
      d  pLink_                         *
+      //‚dealloc a link
+     d tree_dealloc    pr
+     d  lLink                          *
+     d  pDeallocate                    *   const procptr options(*nopass)
