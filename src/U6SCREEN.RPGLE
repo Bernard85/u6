@@ -4,78 +4,181 @@
       /copy cpy,u6screen_s
       /copy cpy,u6tree_h
       //‚--------------------------------------------------------------------
-      //‚set new action
+      //‚set new function key
       //‚--------------------------------------------------------------------
-     pscreen_setAction...
-     p                 b                   export
-     dscreen_setAction...
-     d                 pi
-     d lActions                        *
-     d ID                             1a   const
-     d fControl                        n   const
-     d pProc                           *   const procptr
-     d text_                         30a   const varying options(*nopass)
+     pscreen_setFK     b                   export
+     d screen_setFK    pi
+     d  lFKS                           *
+     d  key                           1a   const
+     d  fControl                       n   const
+     d  pfunction                      *   const procptr
+     d  libel0                       30a   const varying options(*nopass)
+     d  libel1                       30a   const varying options(*nopass)
+     d  libel2                       30a   const varying options(*nopass)
       *
-     d text            s             30a         varying inz('')
-     d action          ds                  likeds(tAction) based(pAction)
-       if lActions=*null;
-         lActions=tree_getNewLink(*null);
+     d FK              ds                  likeds(tFK) based(pFK)
+     d lFK             s               *
+     d FKC             ds                  likeds(tFKC) based(pFKC)
+       if lFKs=*null;
+         lFKs=tree_getNewLink(*null);
        endIf;
-       if %parms()=5;
-         text=text_;
+       pFK=tree_getNewItem(%addr(tFK):%size(tFK));
+       FK.key=key;
+       FK.fControl=fControl;
+       FK.pFunction=pFunction;
+       lFK=tree_getNewLink(pFK);
+       tree_LinkToParent(lFKs:lFK);
+       if %parms>=%parmnum(libel0);
+         pFKC=tree_getnewitem(%addr(tFKC):%size(tFKC));
+         FKC.NO=0;
+         FKC.libel=libel0;
+         tree_LinkToParent(lFK:tree_getNewLink(pFKC));
+       endif;
+       if %parms>=%parmnum(libel1);
+         pFKC=tree_getnewitem(%addr(tFKC):%size(tFKC));
+         FKC.NO=1;
+         FKC.libel=libel1;
+         tree_LinkToParent(lFK:tree_getNewLink(pFKC));
+       endif;
+       if %parms>=%parmnum(libel2);
+         pFKC=tree_getnewitem(%addr(tFKC):%size(tFKC));
+         FKC.NO=2;
+         FKC.libel=libel2;
+         tree_LinkToParent(lFK:tree_getNewLink(pFKC));
+       endif;
+     p                 e
+      //‚-----------------------------------------------------------------------
+      //‚get function key context
+      //‚-----------------------------------------------------------------------
+     pscreen_getFKcontext...
+     p                 b                   export
+     d screen_getFKcontext...
+     d                 pi             3i 0
+     d  lFKs                           *   const
+     d  key                           1a   const
+      *
+     d lFK             s               *
+     d FK              ds                  likeDs(tFK) based(pFK)
+     d lFKC            s               *
+     d FKC             ds                  likeDs(tFKC) based(pFKC)
+       lFK=tree_getItemFromList(lFKs:kFK:key);
+       if lFK=*null;
+         return -1;
        endIf;
-       pAction=tree_getNewItem(%addr(tAction):%size(tAction));
-       Action.ID=ID;
-       Action.fControl=fControl;
-       Action.text=text;
-       Action.pProc=pProc;
-       tree_LinkToParent(lActions:tree_getNewLink(pAction));
+       lFKC=tree_getFirst(lFK);
+       if lFKC=*null;
+         return -1;
+       endIf;
+       pFKC=tree_getItem(lFKC);
+       return FKC.NO;
+     p                 e
+      //‚-----------------------------------------------------------------------
+      //‚set function key context
+      //‚-----------------------------------------------------------------------
+     pscreen_setFKcontext...
+     p                 b                   export
+     d screen_setFKcontext...
+     d                 pi
+     d  lFKs                           *   const
+     d  key                           1a   const
+     d  context                       3u 0 const
+      *
+     d lFK             s               *
+     d FK              ds                  likeDs(tFK) based(pFK)
+     d lFKC            s               *
+     d FKC             ds                  likeDs(tFKC) based(pFKC)
+       lFK=tree_getFirst(lFKs);
+       dow lFK<>*null;
+         pFK=tree_getItem(lFK);
+         if FK.key=key;
+           lFKC=tree_getFirst(lFK);
+           dow lFKC<>*null;
+             pFKC=tree_getItem(lFKC);
+             if FKC.NO=context;
+               tree_setFirst(lFKC);
+               return;
+             endIf;
+             lFKC=tree_getNext(lFKC);
+           endDo;
+         endIf;
+         lFK=tree_getNext(lFK);
+       endDo;
+     p                 e
+      //‚-----------------------------------------------------------------------
+      //‚screen need to be refreshed
+      //‚-----------------------------------------------------------------------
+     pscreen_toRefresh...
+     p                 b                   export
+     d screen_toRefresh...
+     d                 pi              n
+       return screen_flagTorefresh;
      p                 e
       //‚-----------------------------------------------------------------------
       //‚get function key entitle
       //‚-----------------------------------------------------------------------
-     p screen_getfkentitle...
+     pscreen_getfkentitle...
      p                 b                   export
      d screen_getfkentitle...
      d                 pi           100a   varying
-     d lActions                        *   const
+     d lFKs                            *   const
       *
-     d lAction         s               *
-     d action          ds                  likeds(tAction) based(pAction)
+     d lFK             s               *
+     d FK              ds                  likeds(tFK) based(pFK)
      d wFK             s            100a   varying inz('')
-       lAction=tree_getFirst(lActions);
-       dow lAction<>*null;
-         pAction=tree_getItem(lAction);
-         if Action.text<>'';
-           wFK+=Action.text+'  ';
+     d FKC             ds                  likeds(tFKC) based(pFKC)
+     d lFKC            s               *
+       lFK=tree_getFirst(lFKs);
+       dow lFK<>*null;
+         lFKC=tree_getFirst(lFK);
+         if lFKC<>*null;
+           pFKC=tree_getItem(lFKC);
+           wFK+=FKC.libel+'  ';
          endIf;
-         lAction=tree_getNext(lAction);
+         lFK=tree_getNext(lFK);
        endDo;
+       screen_FlagtoRefresh=*off;
        return wfk;
      p                 e
-      //‚-----------------------------------------------------------------------
-      //‚get action from key pressed
-      //‚-----------------------------------------------------------------------
-     p screen_getActionfromkey...
+      //‚--------------------------------------------------------------------
+      //‚control FK and eventualy perform action tied
+      //‚--------------------------------------------------------------------
+     pscreen_processFK...
      p                 b                   export
-     d screen_getActionfromkey...
-     d                 pi              *   procptr
-     d  lActions                       *   const
-     d   kp                           1a   const
-     d   fControl                     1n
+     d screen_processFK...
+     d                 pi
+     d  pgmID                        10a   const
+     d  lFKs                           *   const
+     d  key                           1a   const
+     d  pControl                       *   const procptr
       *
-     d lAction         s               *
-     d Action          ds                  likeDs(tAction) based(pAction)
-       lAction=tree_getFirst(lActions);
-       dow lAction<>*null;
-         pAction=tree_getItem(lAction);
-         if Action.ID=kp;
-           fControl=Action.fControl;
-           return Action.pProc;
-         endIf;
-         lAction=tree_getNext(lAction);
-       endDo;
-       return *null;
+     d lFK             s               *
+     d FK              ds                  likeDS(tFK) based(pFK)
+     d lFKC            s               *
+     d control         pr              n   extproc(pControl)
+     d function        pr                  extproc(FK.pFunction)
+       //‚Check if the function key is allowed                               -
+       lFK=tree_getItemFromList(lFKs:kFK:key);
+       if lFK=*null;
+         msg_SndPM(pgmID:'Function key invalid.');
+         return;
+       endIf;
+       //‚get the action from function key
+       pFK=tree_getItem(lFK);
+       //‚if control needed process it
+       if FK.fControl and control();
+         return;
+       endif;
+       //‚Change context/libel on FK
+       if tree_getFirst(lFK)<>tree_getLast(lFK);
+         lFKC=tree_getFirst(lFK);
+         lFKC=tree_getNextInLoop(lFKC);
+         tree_setFirst(lFKC);
+         screen_FlagtoRefresh=*on;
+       endIf;
+       //‚no erros : perform the action tied to function key
+       if FK.pFunction<>*null;
+         function();
+       endIf;
      p                 e
       //‚--------------------------------------------------------------------
       //‚set new option
@@ -172,37 +275,6 @@
       *
      d option          ds                  likeDs(tOption) based(pOption)
        return Option.pValProc;
-     p                 e
-      //‚--------------------------------------------------------------------
-      //‚control FK and eventualy perform action tied
-      //‚--------------------------------------------------------------------
-     pscreen_processFK...
-     p                 b                   export
-     d screen_processFK...
-     d                 pi
-     d  pgmID                        10a   const
-     d  lActions                       *   const
-     d  FK                            1a   const
-     d  pControl                       *   const procptr
-      *
-     d lAction         s               *
-     d action          ds                  likeDS(tAction) based(pAction)
-     d control         pr              n   extproc(pControl)
-     d actionproc      pr                  extproc(action.pProc)
-       //‚Check if the function key is allowed                               -
-       lAction=tree_getItemFromList(lActions:kAction:FK);
-       if lAction=*null;
-         msg_SndPM(pgmID:'Function key invalid.');
-         return;
-       endIf;
-       //‚get the action from function key                                   -
-       pAction=tree_getItem(lAction);
-       //‚if control needed process it                                       -
-       if Action.fControl and control();
-         return;
-       endif;
-       //‚no erros : perform the action tied to function key                 -
-       actionProc();
      p                 e
       //‚--------------------------------------------------------------------
       //‚set sflend

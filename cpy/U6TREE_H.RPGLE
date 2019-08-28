@@ -32,6 +32,9 @@
       //‚get first link
      d tree_getFirst   pr              *
      d  pLink_                         *   const
+      //‚force first child
+     d tree_setFirst   pr
+     d  lItem                          *   const
       //‚get level of a link
      d tree_getLevel   pr             3i 0
      d  pLink_                         *   const
@@ -51,6 +54,10 @@
       //‚get next link
      d tree_getNext    pr              *
      d  pLink_                         *   const
+      //‚get next link in Loop
+     d tree_getNextInLoop...
+     d                 pr              *
+     d  pLink                          *   const
       //‚get previous link
      d tree_getPrev    pr              *
      d  pLink_                         *   const

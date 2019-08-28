@@ -1,21 +1,37 @@
-      //‚set new action
-     dScreen_setAction...
-     d                 pr
-     d lActions                        *
-     d ID                             1a   const
+      //‚set new function key
+     dScreen_setFK     pr
+     d lFKs                            *
+     d key                            1a   const
      d fControl                        n   const
-     d pProc                           *   const procptr
-     d text_                         30a   const varying options(*nopass)
+     d pFunction                       *   const procptr
+     d libel0                        30a   const varying options(*nopass)
+     d libel1                        30a   const varying options(*nopass)
+     d libel2                        30a   const varying options(*nopass)
+      //‚screen need to be refreshed
+     d screen_toRefresh...
+     d                 pr              n
       //‚get function key entitle
      d screen_getfkentitle...
      d                 pr           100a   varying
-     d lActions                        *   const
-      //‚get action from key pressed
-     d screen_getActionfromkey...
-     d                 pr              *   procptr
-     d  lActions                       *   const
-     d   kp                           1a   const
-     d   fControl                     1n
+     d lFKs                            *   const
+      //‚control FK and eventualy perform function tied
+     d screen_processFK...
+     d                 pr
+     d  pgmID                        10a   const
+     d  lFKs                           *   const
+     d  key                           1a   const
+     d  pControl                       *   const procptr
+      //‚get function key context
+     d screen_getFKcontext...
+     d                 pr             3i 0
+     d  lFKs                           *   const
+     d  key                           1a   const
+      //‚set function key context
+     d screen_setFKcontext...
+     d                 pr
+     d  lFKs                           *   const
+     d  key                           1a   const
+     d  context                       3u 0 const
       //‚set new option
      d screen_setOption...
      d                 pr
@@ -46,10 +62,3 @@
      d                 pr
      d  sflEnd                        7a
      d  atEnd                          n   const
-      //‚control FK and eventualy perform action tied
-     d screen_processFK...
-     d                 pr
-     d  pgmID                        10a   const
-     d  lActions                       *   const
-     d  FK                            1a   const
-     d  pControl                       *   const procptr

@@ -194,6 +194,17 @@
        return Link.first;
      p                 e
       //‚-----------------------------------------------------------------------
+      //‚force first child
+      //‚-----------------------------------------------------------------------
+     ptree_setFirst    b                   export
+     d tree_setFirst   pi
+     d  lItem                          *   const
+      *
+     d parent          ds                  likeDs(tLink) based(lParent)
+       lParent=tree_getParent(lItem);
+       Parent.first=lItem;
+     p                 e
+      //‚-----------------------------------------------------------------------
       //‚get last child
       //‚-----------------------------------------------------------------------
      ptree_getLast     b                   export
@@ -278,6 +289,22 @@
          return Link.next;
        endIf;
        return *null;
+     p                 e
+      //‚------------------------------------------------------------------- ---
+      //‚get next link in Loop
+      //‚------------------------------------------------------------------- ---
+     ptree_getNextInLoop...
+     p                 b                   export
+     d tree_getNextInLoop...
+     d                 pi              *
+     d  pLink                          *   const
+      *
+     d pX              s               *
+       pX=tree_getNext(pLink);
+       if pX=*null;
+         pX=tree_getLast(tree_getParent(pLink));
+       endIf;
+       return pX;
      p                 e
       //‚-----------------------------------------------------------------------
       //‚get the next row to display
