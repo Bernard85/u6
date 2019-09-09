@@ -12,7 +12,7 @@
      d                 pr              n
       //‚get function key entitle
      d screen_getfkentitle...
-     d                 pr           100a   varying
+     d                 pr           123a   varying
      d lFKs                            *   const
       //‚control FK and eventualy perform function tied
      d screen_processFK...
@@ -23,7 +23,7 @@
      d  pControl                       *   const procptr
       //‚get function key context
      d screen_getFKcontext...
-     d                 pr             3i 0
+     d                 pr             1a
      d  lFKs                           *   const
      d  key                           1a   const
       //‚set function key context
@@ -31,32 +31,17 @@
      d                 pr
      d  lFKs                           *   const
      d  key                           1a   const
-     d  context                       3u 0 const
+     d  context                       1a   const
       //‚set new option
      d screen_setOption...
      d                 pr
      d lOptions                        *
      d ID                             2a   const
-     d pChkProc                        *   const procptr
-     d pValProc                        *   const procptr
      d text_                         30a   const varying options(*nopass)
       //‚get options entitle
      d screen_getChoicesEntitle...
      d                 pr           100a   varying
      d lOptions                        *   const
-      //‚get option from choice
-     dScreen_GetOptionfromChoice...
-     d                 pr              *
-     d  lOptions                       *   const
-     d  mychoice                      2a   const
-      //‚get check procedure from option
-     dScreen_GetCheckProcFromOption...
-     d                 pr              *   procptr
-     d  pOption                        *   const
-      //‚get validation procedure from option
-     dScreen_GetValidationProcFromOption...
-     d                 pr              *   procptr
-     d  pOption                        *   const
       //‚set sflend
      d screen_setSflend...
      d                 pr

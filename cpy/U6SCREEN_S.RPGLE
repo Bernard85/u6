@@ -12,13 +12,11 @@
      d kFKC            c                   const('c')
      d tFKC            ds                  qualified
      d  kItem                         1a   inz(kFKC)
-     d  NO                            3u 0
+     d  ID                            1a   varying
      d  libel                        30a   varying
       //‚Option
      d kOption         c                   const('o')
      d tOption         ds                  qualified
      d  kItem                         1a   inz(kOption)
      d  id                            2a   varying
-     d  pValProc                       *   procptr
-     d  pChkProc                       *   procptr
-     d  text                         30a   varying
+     d  text                         30a   varying inz('')

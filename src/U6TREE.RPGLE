@@ -57,7 +57,7 @@
       //‚--------------------------------------------------------------------
       //‚get flag of a link
       //‚--------------------------------------------------------------------
-     p tree_getFlag    b
+     p tree_getFlag    b                   export
      d tree_getFlag    pi              n
      d  pLink_                         *   const
      d  iFlag                         3u 0 const
@@ -65,6 +65,19 @@
      dLink             ds                  likeDs(tLink) based(pLink)
        pLink=pLink_;
        return ifs_testbit(%addr(link.flag):iFlag);
+     p                 e
+      //‚--------------------------------------------------------------------
+      //‚set flag of a link
+      //‚--------------------------------------------------------------------
+     p tree_setFlag    b                   export
+     d tree_setFlag    pi
+     d  pLink_                         *   const
+     d  iFlag                         3u 0 const
+     d  status                         n   const
+      *
+     dLink             ds                  likeDs(tLink) based(pLink)
+       pLink=pLink_;
+       ifs_setbit(%addr(link.flag):iFlag:status);
      p                 e
       //‚--------------------------------------------------------------------
       //‚Link item to its parent
@@ -268,31 +281,123 @@
        return tree_getFlag(pLink:fOpen);
      p                 e
       //‚------------------------------------------------------------------- ---
+      //‚get current link
+      //‚------------------------------------------------------------------- ---
+     ptree_getCurrent  b                   export
+     dtree_getCurrent  pi              *
+     d  pLink                          *   const
+     d  pValidator_                    *   const procptr options(*nopass)
+      *
+     d  pValidator     s               *   procptr inz(*null)
+     d  isValid        s              3i 0
+        if %parms()=%parmnum(pValidator_);
+          pValidator=pValidator_;
+        endIf;
+
+        if tree_Validator(pLink:pValidator:isValid)=1;
+          return pLink;
+        elseif isValid=-1;
+          return *null;
+        endIf;
+
+        return tree_getNext(pLink:pValidator);
+     p                 e
+      //‚------------------------------------------------------------------- ---
       //‚get next link
       //‚------------------------------------------------------------------- ---
      p tree_getNext    b                   export
      d tree_getNext    pi              *
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
 
-     dLink             ds                  likeDs(tLink) based(pLink)
-     dParent           ds                  likeDs(tLink) based(pParent)
+     d link            ds                  likeDs(tLink) based(pLink)
+     d Parent          ds                  likeDs(tLink) based(pParent)
+     d pValidator      s               *   procptr inz(*null)
+     d isValid         s              3i 0
        if pLink_=*null;
          return *null;
        endIf;
+       if %parms()=%parmnum(pValidator_);
+         pValidator=pValidator_;
+       endIf;
        pLink=pLink_;
-       // no parent no brother
-       pParent=Link.parent;
-       if pparent=*null;
+       //‚no parent has no brother
+       if Link.parent=*null;
          return *null;
        endIf;
-       if link.next<>parent.first;
-         return Link.next;
-       endIf;
-       return *null;
+       pParent=Link.parent;
+
+       dow 1=1;
+         pLink=Link.next;
+         if pLink=parent.first;
+           return *null;
+         endif;
+
+         if tree_Validator(pLink:pValidator:isValid)=1;
+           return pLink;
+         elseif isValid=-1;
+           return *null;
+         endif;
+       endDo;
      p                 e
-      //‚------------------------------------------------------------------- ---
+      //‚-----------------------------------------------------------------------
+      //‚get previous link
+      //‚-----------------------------------------------------------------------
+     ptree_getPrev     b                   export
+     d tree_getPrev    pi              *
+     d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
+
+     d Link            ds                  likeDs(tLink) based(pLink)
+     d Parent          ds                  likeDs(tLink) based(pParent)
+     d pValidator      s               *   procptr inz(*null)
+     d isValid         s              3i 0
+       if pLink_=*null;
+         return *null;
+       endIf;
+       if %parms()=%parmnum(pValidator_);
+         pValidator=pValidator_;
+       endIf;
+       pLink=pLink_;
+       //‚no parent has no brother
+       if Link.parent=*null;
+         return *null;
+       endIf;
+       //
+       pParent=Link.parent;
+       dow 1=1;
+         if pLink=parent.first;
+           return *null;
+         endif;
+         pLink=Link.prev;
+         if tree_Validator(pLink:pValidator:isValid)=1;
+           return pLink;
+         elseif isValid=-1;
+           return *null;
+         endif;
+       endDo;
+     p                 e
+      //‚-----------------------------------------------------------------------
+      //‚Validator Stop:-1, Skip:0, Take it:1
+      //‚-----------------------------------------------------------------------
+     ptree_Validator   b
+     d tree_Validator  pi             3i 0
+     d  pLink                          *   const
+     d  pValidator                     *   const procptr
+     d  isValid                       3i 0
+      *
+     d Validator       pr             3i 0 extproc(pValidator)
+     d  pLink                          *   const
+       if pValidator=*null;
+         isValid=1;
+       else;
+         isValid=Validator(pLink);
+       endIf;
+       return isValid;
+     p                 e
+      //‚-----------------------------------------------------------------------
       //‚get next link in Loop
-      //‚------------------------------------------------------------------- ---
+      //‚-----------------------------------------------------------------------
      ptree_getNextInLoop...
      p                 b                   export
      d tree_getNextInLoop...
@@ -449,30 +554,6 @@
        pLink2=Link2.prev;
        return pLink2;
      p                 e
-      //‚-----------------------------------------------------------------------
-      //‚get previous link
-      //‚-----------------------------------------------------------------------
-     p tree_getPrev    b                   export
-     d tree_getPrev    pi              *
-     d  pLink_                         *   const
-
-     dLink             ds                  likeDs(tLink) based(pLink)
-     dParent           ds                  likeDs(tLink) based(pParent)
-       if pLink_=*null;
-         return *null;
-       endIf;
-       pLink=pLink_;
-       // les sans parents sont sans frères
-       if Link.parent=*null;
-         return *null;
-       endIf;
-       //
-       pParent=Link.parent;
-       if pLink<>parent.first;
-         return link.prev;
-       endIf;
-       return *null;
-     p                 e
       //‚--------------------------------------------------------------------
       //‚xml --> tree
       //‚--------------------------------------------------------------------
@@ -522,13 +603,13 @@
       //‚--------------------------------------------------------------------
       //‚get item from list by ID
       //‚--------------------------------------------------------------------
-     ptree_getItemfromList...
+     ptree_getLinkFromList...
      p                 b                   export
-     d tree_getItemfromList...
+     d tree_getLinkFromList...
      d                 pi              *
      d  lAnonyms                       *   const
      d  kind                          1a   const
-     d  ID                          255a   const varying
+     d  ID                          255a   const varying options(*nopass)
       *
      d tAnonym         ds                  qualified template
      d  kind                          1a
@@ -538,8 +619,12 @@
        lAnonym=tree_getFirst(lAnonyms);
        dow lAnonym<>*null;
          pAnonym=tree_getItem(lAnonym);
-         if Anonym.kind=kind and Anonym.id=id;
-           return lAnonym;
+         if Anonym.kind=kind;
+           if %parms()<%parmnum(ID);
+             return lAnonym;
+           elseif Anonym.id=id;
+             return lAnonym;
+           endif;
          endif;
          lAnonym=tree_getNext(lAnonym);
        endDo;
@@ -686,14 +771,19 @@
      ptree_dealloc     b                   export
      d tree_dealloc    pi
      d  lLink                          *
-     d  pDeallocate                    *   const procptr options(*nopass)
+     d  pDeallocate_                   *   const procptr options(*nopass)
+      *
+     d  pDeallocate    s               *   procptr inz(*null)
      d  Deallocate     pr                  extproc(pDeallocate)
      d  pItem                          *
      d  pItem          s               *
        if lLink=*null;
          return;
        endIf;
-       tree_dealloc2(lLink:pDeallocate);
+       if %parms()=%parmnum(pDeallocate_);
+         pDeallocate=pDeallocate_;
+       endIf;
+       tree_deallocChilds(lLink:pDeallocate);
        if pDeallocate<>*null;
          deallocate(lLink);
        endIf;
@@ -704,19 +794,24 @@
        dealloc(en) lLink;
      p                 e
       //‚--------------------------------------------------------------------
-      //‚dealloc a link (part 2)
+      //‚dealloc childs of a link
       //‚--------------------------------------------------------------------
-     ptree_dealloc2    b
-     d tree_dealloc2   pi
-     d  lLink                          *
+     ptree_deallocChilds...
+     p                 b                   export
+     d tree_deallocChilds...
+     d                 pi
+     d  pLink_                         *   const
      d  pDeallocate                    *   const procptr
       *
      d  lCurrent       s               *
      d  lNext          s               *
-       lCurrent=tree_getFirst(lLink);
+     d  Link           ds                  likeDs(tLink) based(pLink)
+       pLink=pLink_;
+       lCurrent=tree_getFirst(pLink);
        dow lCurrent<>*null;
          lNext=tree_getNext(lCurrent);
          tree_dealloc(lCurrent:pDeallocate);
          lCurrent=lNext;
        endDo;
+       link.first=*null;
      p                 e

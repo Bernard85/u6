@@ -27,10 +27,6 @@
      d jrn_XmlOutput...
      d                 pr                  likeDs(xml_nodeDefine)
      d   lNode                         *   const
-      //‚get roots of journal analysis
-     d jrn_getRoots    pr
-     d  lJrn                           *   const
-     d  lEntries                       *
       //‚link entries
      d jrn_tieEntries  pr
      d  lEntries                       *   const

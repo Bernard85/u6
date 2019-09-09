@@ -31,7 +31,7 @@
          lYViews=tree_getnewlink(*null);
        endif;
        //
-       lYView=tree_getItemFromList(lYViews:kYView:ID);
+       lYView=tree_getLinkFromList(lYViews:kYView:ID);
        if lYView=*null;
          //‚load new view                                                      -
          pYView=yview_loadYView(lForms:lFmts:ID:fmtID);

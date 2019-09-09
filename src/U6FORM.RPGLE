@@ -78,7 +78,7 @@
        if lForms=*null;
          lforms=tree_getnewlink(*null);
        endif;
-       lForm=tree_getItemFromList(lForms:kForm:formID);
+       lForm=tree_getLinkFromList(lForms:kForm:formID);
        if lForm=*null;
          lForm=tree_Xml2Tree(env_getfilename(cForm:formId)
                             :%pAddr(FORM_XmlInput));

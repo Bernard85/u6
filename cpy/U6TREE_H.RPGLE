@@ -15,10 +15,19 @@
      dtree_OpenLink    pr
      d pLink                           *   const
       //‚close a link
-     d tree_closeLink  pr
+     dtree_closeLink   pr
      d   pLink                         *   const
+      //‚get flag of a link
+     dtree_getFlag     pr              n
+     d  pLink_                         *   const
+     d  iFlag                         3u 0 const
+      //‚set flag of a link
+     dtree_setFlag     pr
+     d  pLink_                         *   const
+     d  iFlag                         3u 0 const
+     d  status                         n   const
       //‚Link a node to its parent
-     d tree_linkToParent...
+     dtree_linkToParent...
      d                 pr
      d pParentLink_                    *   const
      d pNewLink_                       *   const
@@ -51,9 +60,14 @@
       //‚get parent
      d tree_getParent  pr              *
      d  pLink_                         *   const
+      //‚get current link
+     dtree_getCurrent  pr              *
+     d  pLink                          *   const
+     d  pValidator_                    *   const procptr options(*nopass)
       //‚get next link
      d tree_getNext    pr              *
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
       //‚get next link in Loop
      d tree_getNextInLoop...
      d                 pr              *
@@ -61,6 +75,7 @@
       //‚get previous link
      d tree_getPrev    pr              *
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
       //‚get the next row to sisplay
      d tree_getNextToDisplay...
      d                 pr              *
@@ -82,11 +97,11 @@
      d path                         255a   varying const
      d XXX_GetNewItem                  *   procptr const
       //‚get item from list by ID
-     d tree_getItemfromList...
+     d tree_getLinkfromList...
      d                 pr              *
      d  lItems                         *   const
      d  kind                          1a   const
-     d  ID                          255a   const varying
+     d  ID                          255a   const varying options(*nopass)
       //‚get last
      d tree_getLast    pr              *
      d  pLink_                         *   const
@@ -112,3 +127,8 @@
      d tree_dealloc    pr
      d  lLink                          *
      d  pDeallocate                    *   const procptr options(*nopass)
+      //‚dealloc childs of a link
+     d tree_deallocChilds...
+     d                 pr
+     d  lLink                          *   const
+     d  pDeallocate                    *   const procptr

@@ -1,4 +1,5 @@
      H nomain option(*NOSHOWCPY)
+      /copy cpy,u6filter_h
       /copy cpy,u6tree_h
       /copy cpy,u6xml_h
 
@@ -45,9 +46,9 @@
          entry.det.uspf=xml_getAttAsString ('USPF':ND.atts);
          entry.det.syNM=xml_getAttAsString ('SYNM':ND.atts);
          return pEntry;
-
+       else;
+         return filter_XMLinput(ND);
        endIf;
-       return *null;
      p                 e
       //‚--------------------------------------------------------------------
       //‚Set line for Xml parser from node on journal family
@@ -88,25 +89,10 @@
          xml_setAttfromInteger(ND.atts:'CTRR':entry.det.Ctrr);
          xml_setAttfromString (ND.atts:'USPF':entry.det.uspf);
          xml_setAttfromString (ND.atts:'SYNM':entry.det.syNM);
+       else;
+         ND=filter_XmlOutput(lNode);
        endIf;
        return ND;
-     p                 e
-      //‚--------------------------------------------------------------------
-      //‚get roots of journal analysis
-      //‚--------------------------------------------------------------------
-     pjrn_getRoots     b                   export
-     d jrn_getRoots    pi
-     d  lJrn                           *   const
-     d  lEntries                       *
-      *
-     d lX              s               *
-       lX=tree_getFirst(lJrn);
-       dow lX<>*null;
-         if tree_isOfTheKind(kEntries:lX);
-           lEntries=lX;
-         endif;
-         lX=tree_getNext(lX);
-       endDo;
      p                 e
       //‚--------------------------------------------------------------------
       //‚link entries

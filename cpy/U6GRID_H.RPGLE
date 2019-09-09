@@ -1,22 +1,18 @@
       //‚GRID family
      d kGrid           c                   const('G')
+     d kSubGrid        c                   const('S')
      d kColumn         c                   const('c')
       //‚grid
      d tGrid           ds                  qualified
      d  kind                          1    inz(kGrid)
      d  ID                           10    varying
      d  text                         50
-      *
      d  change                         n
      d  lFormat                        *   inz(*null)
-     d**view                               likeDs(tGridView)
-      //‚View in the grid
-     d*tGridView       ds                  qualified
-     d* headers                     131a   varying
-     d* position                      5u 0 inz(0)
-     d* base                          3u 0 inz(0)
-     d* lColumn1                       *   inz(*null)
-     d* lColumn9                       *   inz(*null)
+      //‚sub-grid
+     d tSubGrid        ds                  qualified
+     d  kind                          1    inz(kSubGrid)
+     d  ID                           10    varying
       //‚column
      d tColumn         ds                  qualified
      d  kind                          1    inz(kColumn)
@@ -28,7 +24,6 @@
      d  maxWidth                      5u 0
      d  hdr1                         30    varying
      d  formula                      50    varying
-      *
      d  text                         50    varying
      d  lFormula                       *
      d  pos                           3u 0

@@ -17,7 +17,7 @@
          lformats=tree_getnewlink(
                   tree_getNewItem(%addr(tFormats):%size(tFormats)));
        endif;
-       lFormat=tree_getItemFromList(lFormats:kFormat:formatID);
+       lFormat=tree_getLinkFromList(lFormats:kFormat:formatID);
        if lFormat=*null;
          lFormat=tree_Xml2Tree(env_getFileName(cFmt:formatId)
                               :%pAddr(Fmt_xmlInput));
@@ -35,6 +35,7 @@
      d   ND                                const likeDs(xml_nodeDefine)
       *
      d   format        ds                  likeds(tFormat) based(pFormat)
+     d   subFormat     ds                  likeds(tSubFormat) based(pSubFormat)
      d   field         ds                  likeds(tField) based(pField)
        if ND.ID='FORMAT';
          pFormat=tree_getnewitem(%addr(tFormat):%size(tFormat));
@@ -44,6 +45,13 @@
          format.pBuffer1=*null;
          format.pBuffer0=*null;
          return pFormat;
+
+       elseIf ND.ID='SUBFORMAT';
+         pSubFormat=tree_getnewitem(%addr(tSubFormat):%size(tSubFormat));
+         SubFormat.ID=xml_getAttAsString('ID':ND.atts);
+         SubFormat.pos=xml_getAttAsInteger('POS':ND.atts)-1;
+         SubFormat.formula=xml_getAttAsString('FORMULA':ND.atts);
+         return pSubFormat;
 
        elseif ND.ID='FIELD';
          pField=tree_getnewitem(%addr(tField):%size(tField));
@@ -67,6 +75,7 @@
       *
      d   ND            ds                  likeDs(xml_nodeDefine)
      d   format        ds                  likeds(tFormat) based(pFormat)
+     d   subFormat     ds                  likeds(tSubFormat) based(pSubFormat)
      d   field         ds                  likeds(tField) based(pField)
        clear ND;
 
@@ -75,6 +84,12 @@
          xml_setAttfromString (ND.atts:'ID':format.ID);
          xml_setAttfromInteger(ND.atts:'LEN':format.len);
          xml_setAttfromInteger(ND.atts:'FLDNBR':format.fldnbr);
+
+       elseIf tree_isofthekind(kSubFormat:lNode:pSubFormat);
+         ND.ID='SUBFORMAT';
+         xml_setAttfromString (ND.atts:'ID':SubFormat.ID);
+         xml_setAttfromInteger(ND.atts:'POS':SubFormat.pos);
+         xml_setAttfromString (ND.atts:'FORMULA':SubFormat.formula);
 
        elseif tree_isofthekind(kField:lNode:pField);
          ND.ID='FIELD';

@@ -1,9 +1,10 @@
       //‚--------------------------------------------------------------------
       //‚FORMAT family
       //‚--------------------------------------------------------------------
-     d kFormats        c                   const('O')
-     d kFormat         c                   const('o')
-     d kField          c                   const('f')
+     d kFormats        c                   const('F')
+     d kFormat         c                   const('f')
+     d kSubFormat      c                   const('s')
+     d kField          c                   const('i')
       //‚Format
      d tFormats        ds                  qualified
      d  kind                          1    inz(kFormats)
@@ -15,6 +16,13 @@
      d  fldnbr                        5u 0
      d  pBuffer1                       *
      d  pBuffer0                       *
+      //‚sub-format
+     d tSubFormat      ds                  qualified
+     d  kind                          1    inz(kSubFormat)
+     d  ID                           10    varying
+     d  Pos                           5u 0
+     d  formula                      50a   varying
+     d  lFormula                       *   inz(*null)
       //‚Field
      d tField          ds                  qualified
      d  kind                          1    inz(kField)

@@ -13,13 +13,18 @@
      d                 pi              *
      d   ND                                const likeDs(xml_nodeDefine)
       *
-     d   grid          ds                  likeds(tGrid)   based(pGrid)
-     d   column        ds                  likeds(tColumn) based(pColumn)
+     d   grid          ds                  likeds(tGrid)    based(pGrid)
+     d   subGrid       ds                  likeds(tSubGrid) based(pSubGrid)
+     d   column        ds                  likeds(tColumn)  based(pColumn)
        if ND.ID='GRID';
          pGrid=tree_getnewitem(%addr(tGrid):%size(tGrid));
          grid.ID=xml_getAttAsString('ID':ND.atts);
          grid.text=ND.text;
          return pGrid;
+       elseIf ND.ID='SUBGRID';
+         pSubGrid=tree_getnewitem(%addr(tSubGrid):%size(tSubGrid));
+         subGrid.ID=xml_getAttAsString('ID':ND.atts);
+         return pSubGrid;
        elseIf ND.ID='COLUMN';
          pColumn=tree_getnewitem(%addr(tColumn):%size(tColumn));
          column.ID      =xml_getAttAsString ('ID':ND.atts);
@@ -46,12 +51,16 @@
       *
      d   ND            ds                  likeDs(xml_nodeDefine)
      d   grid          ds                  likeds(tGrid) based(pGrid)
+     d   subGrid       ds                  likeds(tSubGrid) based(pSubGrid)
      d   column        ds                  likeds(tColumn) based(pColumn)
        clear ND;
        if tree_isofthekind(kGrid:lNode:pGrid);
          ND.ID='GRID';
          xml_setAttfromString(ND.atts:'ID':grid.ID);
          ND.text=grid.text;
+       elseIf tree_isofthekind(kSubGrid:lNode:pSubGrid);
+         ND.ID='SUBGRID';
+         xml_setAttfromString(ND.atts:'ID':subGrid.ID);
        elseIf tree_isofthekind(kColumn:lNode:pColumn);
          ND.ID='COLUMN';
          xml_setAttfromString (ND.atts:'ID':column.ID);
@@ -78,7 +87,7 @@
        if lGrids=*null;
          lGrids=tree_getnewlink(*null);
        endif;
-       lGrid=tree_getItemFromList(lGrids:kGrid:gridID);
+       lGrid=tree_getLinkFromList(lGrids:kGrid:gridID);
        if lGrid=*null;
          lGrid=tree_Xml2Tree(env_getfilename(cGrid:GridId)
                             :%pAddr(grid_XmlInput));

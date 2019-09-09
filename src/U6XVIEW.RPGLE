@@ -20,21 +20,21 @@
      d  fmtID          s             10a   varying
      d  lXView         s               *   inz(*null)
      d  pXView         s               *   inz(*null)
-       //‚if the formatID is not passed take the ID for it                    -
+       //‚if the formatID is not passed take the ID for it
        if %parms()=4;
          fmtID=ID;
        else;
          fmtID=fmtID_;
        endif;
-       //‚create the XView anchor if it doesn't exist                         -
+       //‚create the XView anchor if it doesn't exist
        if lXViews=*null;
          lXViews=tree_getnewlink(*null);
        endif;
-       lXView=tree_getItemFromList(lXViews:kXView:ID);
+       lXView=tree_getLinkFromList(lXViews:kXView:ID);
        if lXView=*null;
-         //‚load new view                                                      -
+         //‚load new view
          pXView=xview_loadXView(lGrids:lfmts:ID:fmtID);
-         //‚link to the main tree view                                         -
+         //‚link to the main tree view
          lXView=tree_getNewLink(pXView);
          tree_linktoparent(lXViews:lXView);
        endIf;
@@ -55,38 +55,42 @@
      d  lFmt           s               *   inz(*null)
      d  fmt            ds                  likeDs(tFormat) based(pFmt)
      d  lGrid          s               *   inz(*null)
-     d  lColumn        s               *   inz(*null)
+     d  lVariant       s               *   inz(*null)
      d  column         ds                  likeDs(tColumn) based(pColumn)
-       //‚if the formatID is not passed take the ID for it                    -
+     d  subGrid        ds                  likeDs(tSubGrid) based(pSubGrid)
+       //‚if the formatID is not passed take the ID for it
        if %parms()=3;
          fmtID=ID;
        else;
          fmtID=fmtID_;
        endif;
-       //‚create the grids anchor if it doesn't exist                         -
+       //‚create the grids anchor if it doesn't exist
        if lGrids=*null;
          lGrids=tree_getnewlink(*null);
        endif;
-       //‚create the formats anchor if it doesn't exist                       -
+       //‚create the formats anchor if it doesn't exist
        if lFmts=*null;
          lFmts=tree_getnewlink(*null);
        endif;
-       //‚create the new item xView                                          -
+       //‚create the new item xView
        pXView=tree_getNewItem(%addr(tXView):%size(tXView));
        XView.ID=ID;
-       //‚Load corresponding format                                          -
+       //‚Load corresponding format
        XView.lfmt=fmt_getFormat(lFmts:fmtID);
        pFmt=tree_getItem(XView.lFmt);
        fmt.pBuffer1=%alloc(fmt.len);
        fmt.pBuffer0=%alloc(fmt.len);
-       //‚Load corresponding grid                                            -
+       //‚Load corresponding grid
        XView.lGrid=grid_getGrid(lGrids:fmtID);
-       //‚Resolve formulas                                                   -
-       lColumn=tree_getFirst(XView.lGrid);
-       dow lColumn<>*null;
-         pColumn=tree_getItem(lColumn);
-         column.lFormula=int_loadFormula(column.formula:XView.lFmt);
-         lColumn=tree_getNext(lColumn);
+       //‚Resolve formulas
+       lVariant=tree_getFirst(XView.lGrid);
+       dow lVariant<>*null;
+         if tree_isofthekind(lVariant:kColumn:pColumn);
+           column.lFormula=int_loadFormula(column.formula:XView.lFmt);
+         elseif tree_isofthekind(lVariant:kSubGrid:pSubGrid);
+           subGrid.lFormula=int_loadFormula(column.formula:XView.lFmt);
+         endIf;
+         lVariant=tree_getNext(lVariant);
        endDo;
        return pXView;
      p                 e
@@ -348,7 +352,7 @@
        return hdr;
      p                 e
       //‚--------------------------------------------------------------------
-      //‚get column at position                                             -
+      //‚get column at position
       //‚--------------------------------------------------------------------
      pxview_getColumnAtPos...
      p                 b                   export
@@ -363,7 +367,7 @@
      d  lColumn        s               *
      d  column         ds                  likeds(tColumn) based(pColumn)
        pXView=tree_getItem(lXView);
-       //‚loop on each displayed column                                      -
+       //‚loop on each displayed column
        lColumn=XView.left.lColumn;
        dow lColumn<>*null;
          pColumn=tree_getItem(lColumn);
@@ -392,7 +396,7 @@
        return *off;
      p                 e
       //‚--------------------------------------------------------------------
-      //‚reload the grid of xView                                           -
+      //‚reload the grid of xView
       //‚--------------------------------------------------------------------
      pxview_reloadGrid...
      p                 b                   export
@@ -418,7 +422,7 @@
          lColumn=tree_getNext(lColumn);
        endDo;
        //‚left position in the new grid
-       XView.left.lColumn=tree_getItemFromList(XView.lGrid
+       XView.left.lColumn=tree_getLinkFromList(XView.lGrid
                                               :kColumn
                                               :xview.leftColID);
        xview_setRightColumn(XView:width);

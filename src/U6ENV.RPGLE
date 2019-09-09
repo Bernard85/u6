@@ -73,7 +73,7 @@
          endIf;
        endIf;
        //
-       lField=tree_getItemfromList(g.lenvR:kField:tag);
+       lField=tree_getLinkFromList(g.lenvR:kField:tag);
        if lField=*null;
          return '';
        endIf;
