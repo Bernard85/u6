@@ -85,33 +85,50 @@
        //‚Resolve formulas
        lVariant=tree_getFirst(XView.lGrid);
        dow lVariant<>*null;
-         if tree_isofthekind(lVariant:kColumn:pColumn);
+         if tree_isofthekind(kColumn:lVariant:pColumn);
            column.lFormula=int_loadFormula(column.formula:XView.lFmt);
-         elseif tree_isofthekind(lVariant:kSubGrid:pSubGrid);
-           subGrid.lFormula=int_loadFormula(column.formula:XView.lFmt);
+       //elseif tree_isofthekind(lVariant:kSubGrid:pSubGrid);
+       //  subGrid.lFormula=int_loadFormula(column.formula:XView.lFmt);
          endIf;
          lVariant=tree_getNext(lVariant);
        endDo;
        return pXView;
      p                 e
       //‚--------------------------------------------------------------------
+      //‚position to the most left position
+      //‚--------------------------------------------------------------------
+     pxview_PosToMostLeft...
+     p                 b                   export
+     dxview_PosToMostLeft...
+     d                 pi
+     d  XView                              likeDs(tXView)
+     d  width                         3u 0 const
+       xview_PosAtLeft(XView:width:tree_getFirst(XView.lGrid):1);
+     p                 e
+      //‚--------------------------------------------------------------------
       //‚position to the left
-      //‚------------------------------------------------------------------ -
+      //‚--------------------------------------------------------------------
      pxview_PosAtLeft  b                   export
      dxview_PosAtLeft  pi
      d  XView                              likeDs(tXView)
      d  width                         3u 0 value
+     d  lColumn                        *   const
+     d  pos                           3u 0 value
       *
      d Column          ds                  likeDs(tColumn) based(pColumn)
        //‚Reposition --> clear the headers
        xView.hdrs='';
-       xView.left.lColumn=tree_getFirst(XView.lGrid);
-       pColumn=tree_getItem(XView.left.lColumn);
+       xView.left.lColumn=lColumn;
+       pColumn=tree_getItem(lColumn);
        xView.leftColId=Column.ID;
-       xView.left.pos=1;
-       xView.left.most=*on;
+       if column.maxWidth<=30;
+         xView.left.pos=1;
+       else;
+         xView.left.pos=int_getMin(column.maxWidth-30+1:pos);
+       endif;
+       xView.left.most=pos=1 and xView.left.lColumn=tree_getFirst(XView.lGrid);
        //‚xxxxxxxx
-       xView.left.width=int_getMin(column.maxWidth:width-1);
+       XView.left.width=int_getMin(column.maxWidth-XView.left.pos+1:width-1);
        xview_setRightColumn(XView:width);
      p                 e
       //‚--------------------------------------------------------------------
@@ -360,7 +377,7 @@
      d                 pI              N
      d  lXView                         *   const
      d  pos                           3u 0 const
-     d  column_                            likeds(tColumn)
+     d  lColumn_                       *
      d  posOnColumn                   5u 0
       *
      d  XView          ds                  likeds(tXView) based(pXView)
@@ -370,24 +387,23 @@
        //‚loop on each displayed column
        lColumn=XView.left.lColumn;
        dow lColumn<>*null;
+         lColumn_=lColumn;
          pColumn=tree_getItem(lColumn);
          if lColumn=XView.left.lColumn
          and pos>=column.pos-1
          and pos<=column.pos+XView.left.width-1;
-           Column_=Column;
            posOnColumn=XView.left.pos+pos-column.pos;
            return *on;
          elseif lColumn=XView.right.lColumn
          and pos>=column.pos-1
          and pos<=column.pos+XView.right.width-1;
-           Column_=Column;
            posOnColumn=XView.right.pos+pos-column.pos;
            return *on;
          elseif lColumn=XView.right.lColumn;
            return *off;
-         elseif pos>=column.pos-1
+         elseif lColumn<>XView.left.lColumn
+            and pos>=column.pos-1
             and pos<=column.pos+column.MAXwidth-1;
-           Column_=Column;
            posOnColumn=1+pos-column.pos;
            return *on;
          endIf;

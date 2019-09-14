@@ -35,10 +35,17 @@
      d xview_setHdrs   pr           131a   varying
      d  xView                              likeds(tXView)
      d pos                            5u 0 value
+      //‚position to the most left position
+     dxview_PosToMostLeft...
+     d                 pr
+     d  XView                              likeDs(tXView)
+     d  width                         3u 0 const
       //‚position to the left
      dxview_PosAtLeft  pr
      d  XView                              likeDs(tXView)
      d  width                         3u 0 value
+     d  lColumn                        *   const
+     d  pos                           3u 0 value
       //‚get limits from right
      d xview_TabRight  pr
      d  XView                              likeDs(tXView)
@@ -47,14 +54,14 @@
      d xview_TabLeft   pr
      d  XView                              likeDs(tXView)
      d  width                         3u 0 const
-      //‚get column at position                                             -
+      //‚get column at position
      d xview_getColumnAtPos...
      d                 pr              N
      d  lXView                         *   const
      d  pos                           3u 0 const
-     d  column_                            likeds(tColumn)
+     d  lColumn_                       *
      d  posOnColumn                   5u 0
-      //‚reload the grid of xView                                           -
+      //‚reload the grid of xView
      d xview_reloadGrid...
      d                 pr
      D XVIEW                               likeDs(tXView)
