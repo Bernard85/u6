@@ -4,6 +4,7 @@
      d kJournal        c                   const('J')
      d kEntries        c                   const('E')
      d kEntry          c                   const('e')
+     d kSubEntry       c                   const('s')
       //˜journal
      d tJournal        ds                  qualified
      d  kind                          1    inz(kJournal)
@@ -16,8 +17,14 @@
      d tJrnEntry     e ds                  extname(JRNENTRY) qualified template
      d tEntry          ds                  qualified
      d  kind                          1    inz(kEntry)
-     d  pentry0                        *   inz(*null)
+     d  pEntry0                        *   inz(*null)
      d  det                                likeDs(tJrnEntry)
+     d  lXView                         *
+      //˜sub-entry
+     d tSubEntry       ds                  qualified
+     d  kind                          1    inz(kSubEntry)
+     d  fmtID                        10    varying
+     d  pos                           5u 0
      d  lXView                         *
       //‚get item from JOURNAL family
      djrn_XMLinput...

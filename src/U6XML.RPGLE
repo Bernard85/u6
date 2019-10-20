@@ -300,6 +300,9 @@
      d                                     likeDs(xml_nodeDefine)
      d   lNode                         *   const
        ND=xxx_XMLoutput(lNode);
+       if nd.id='';
+         return;
+       endif;
        ND.isOpen=*on;
        ND.isClose=tree_getFirst(lNode)=*null;
        ND.level=tree_getLevel(lNode);

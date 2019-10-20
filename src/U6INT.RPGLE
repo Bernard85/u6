@@ -241,69 +241,6 @@
        return 0;
      p                 e
       //‚-----------------------------------------------------------------------
-      //‚get string from formula
-      //‚-----------------------------------------------------------------------
-     pint_getStringFromFormula...
-     p                 b                   export
-     d int_getStringFromFormula...
-     d                 pi         32000a   varying
-     d  pBuffer_                       *   const
-     d  pField_                        *   const
-      *
-     d  field          ds                  likeDS(tField) based(pField)
-     d  buffer         s          32000a   based(pBuffer)
-     d  String         s          32000a   varying inz('?')
-       pBuffer=pBuffer_;
-       pField =pField_;
-       if %scan(field.type:'AOZLT')>0;
-         String=%subst(buffer:field.posInBuffer+1:field.len);
-       elseif %scan(field.type:'PS')>0;
-         String=int_editNumeric(pBuffer:field);
-       elseIf field.type='B';
-         String=int_editInteger(pBuffer:field);
-       elseIf field.type='V';
-         ifs_memcpy(%addr(string):pBuffer+field.posinbuffer:field.len);
-       endIf;
-       return String;
-     p                 e
-      //‚-----------------------------------------------------------------------
-      //‚get string from formula
-      //‚-----------------------------------------------------------------------
-     pint_getStringFromFormula2...
-     p                 b                   export
-     d int_getStringFromFormula2...
-     d                 pi         32000a   varying
-     d  lFormula                       *   const
-     d  curBuffer                     3u 0 const options(*nopass)
-      *
-     d  field          ds                  likeDS(tField) based(pField)
-     d  fmt            ds                  likeDS(tFormat) based(pFmt)
-     d  String         s          32000a   varying inz('?')
-     d  buffer         s          32000a   based(pBuffer)
-     d  pBuffer        s               *
-       if tree_isOfTheKind(kField:lFormula:pField);
-         pFmt=tree_getItem(tree_getParent(lFormula));
-         //
-         if %parms()=1;
-           pBuffer=fmt.pBuffer1;
-         elseif curBuffer=1;
-           pBuffer=fmt.pBuffer1;
-         else;
-           pBuffer=fmt.pBuffer0;
-         endIf;
-         if %scan(field.type:'AOZLT')>0;
-           String=%subst(buffer:field.posInBuffer+1:field.len);
-         elseif %scan(field.type:'PS')>0;
-           String=int_editNumeric(pBuffer:field);
-         elseIf field.type='B';
-           String=int_editInteger(pBuffer:field);
-         endIf;
-         return String;
-       else;
-         return '?';
-       endIf;
-     p                 e
-      //‚-----------------------------------------------------------------------
       //‚load procedures
       //‚-----------------------------------------------------------------------
      pint_LoadProcs    b                   export
@@ -331,8 +268,8 @@
       //‚-----------------------------------------------------------------------
       //‚pre-load the formula
       //‚-----------------------------------------------------------------------
-     pint_loadformula  b                   export
-     d int_loadFormula...
+     pint_FormulaLoad  b                   export
+     d int_FormulaLoad...
      d                 pi              *
      d  formula_                   1000a   varying const
      d  lRep                           *   const
@@ -427,18 +364,21 @@
      d  lRep                           *   const
       *
      d lFmt            s               *
+     d lFields         s               *
      d lField          s               *
        if tree_isOftheKind(kFormats:lRep);
          lFmt=tree_getFirst(lRep);
          dow lFmt<>*null;
-           lField=tree_getLinkFromList(lFmt:kField:keyWord);
+           lFields=tree_getLinkFromList(lFmt:kFields);
+           lField=tree_getLinkFromList(lFields:kField:keyWord);
            if lField<>*null;
              return lField;
            endif;
            lFmt=tree_getNext(lFmt);
          endDo;
        elseif tree_isOftheKind(kFormat:lRep);
-         lField=tree_getLinkFromList(lRep:kField:keyWord);
+         lFields=tree_getLinkFromList(lRep:kFields);
+         lField=tree_getLinkFromList(lFields:kField:keyWord);
          if lField<>*null;
            return lField;
          endif;
@@ -628,10 +568,8 @@
       //‚-----------------------------------------------------------------------
       //‚get string from argument
       //‚-----------------------------------------------------------------------
-     pint_getStringFromArg...
-     p                 b                   export
-     d int_getStringFromArg...
-     d                 pi         32000a   varying
+     pint_FormulaExec  b                   export
+     dint_FormulaExec  pi         32000a   varying
      d  lArg                           *   const
      d  curBuffer                     3u 0 const options(*nopass)
       *
@@ -654,7 +592,7 @@
        //‚get the value from the kind of item
        if tree_isOfTheKind(kField:lArg$:pField);
          //‚field
-         pFmt=tree_getItem(tree_getParent(lArg$));
+         pFmt=tree_getItem(tree_getParent(tree_getParent(lArg$)));
          //
          if %parms()=1;
            pBuffer=fmt.pBuffer1;
@@ -712,7 +650,7 @@
      d lArg            s               *
        lArg=tree_getFirst(lArgs);
        dow lArg<>*null;
-         String+=%trim(int_getStringFromArg(lArg));
+         String+=%trim(int_FormulaExec(lArg));
          lArg=tree_getNext(lArg);
        endDo;
        return string;
@@ -728,7 +666,7 @@
      d lArg            s               *
       *
        lArg=tree_getFirst(lArgs);
-       String=int_getStringFromArg(lArg);
+       String=int_FormulaExec(lArg);
        string=%trim(string);
        return string;
      p                 e

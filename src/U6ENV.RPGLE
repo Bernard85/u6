@@ -59,21 +59,23 @@
      d env_getValue    pi           255a   varying
      d  TAG                          10a   const varying
       *
+     d lFields         s               *
      d lField          s               *
      d field           ds                  likeDs(tField) based(pField)
      d tagValue        s            255a   varying
        tagValue='';
        in u6env;
-       if g.lenvR=*null;
+       if g.lEnvr=*null;
          pU6envR=%addr(u6Env);
-         g.lenvR=tree_xml2tree(%trim(u6pathfmt)+'u6envR.'+%trim(u6extfmt)
+         g.lEnvR=tree_xml2tree(%trim(u6pathfmt)+'u6envR.'+%trim(u6extfmt)
                            :%paddr(fmt_XmlInput));
          if g.lenvR=*null;
            return '';
          endIf;
        endIf;
        //
-       lField=tree_getLinkFromList(g.lenvR:kField:tag);
+       lFields=tree_getLinkFromList(g.lEnvr:kFields);
+       lField=tree_getLinkFromList(lFields:kField:tag);
        if lField=*null;
          return '';
        endIf;

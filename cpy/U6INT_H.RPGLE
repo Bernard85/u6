@@ -80,12 +80,11 @@
       //‚load procedures
      dint_LoadProcs    pr
       //‚pre-load the formula
-     d int_loadFormula...
+     d int_FormulaLoad...
      d                 pr              *
      d  formula                    1000a   varying const
      d  lRep                           *   const
       //‚get string from argument
-     d int_getStringFromArg...
-     d                 pr         32000a   varying
+     dint_FormulaExec  pr         32000a   varying
      d  lArg                           *   const
      d  curBuffer                     3u 0 const options(*nopass)

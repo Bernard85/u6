@@ -3,9 +3,11 @@
       //‚--------------------------------------------------------------------
      d kFormats        c                   const('F')
      d kFormat         c                   const('f')
-     d kSubFormat      c                   const('s')
+     d kFields         c                   const('I')
      d kField          c                   const('i')
-      //‚Format
+     d kSubFormats     c                   const('S')
+     d kSubFormat      c                   const('s')
+      //‚Formats
      d tFormats        ds                  qualified
      d  kind                          1    inz(kFormats)
       //‚Format
@@ -16,13 +18,9 @@
      d  fldnbr                        5u 0
      d  pBuffer1                       *
      d  pBuffer0                       *
-      //‚sub-format
-     d tSubFormat      ds                  qualified
-     d  kind                          1    inz(kSubFormat)
-     d  ID                           10    varying
-     d  Pos                           5u 0
-     d  formula                      50a   varying
-     d  lFormula                       *   inz(*null)
+      //‚Fields
+     d tFields         ds                  qualified
+     d  kind                          1    inz(kFields)
       //‚Field
      d tField          ds                  qualified
      d  kind                          1    inz(kField)
@@ -33,6 +31,15 @@
      d  dec                           3u 0
      d  digits                        3u 0
      d  posInBuffer                   5u 0
+      //‚Subformats
+     d tSubFormats     ds                  qualified
+     d  kind                          1    inz(kSubFormats)
+      //‚subFormat
+     d tSubFormat      ds                  qualified
+     d  kind                          1    inz(kSubFormat)
+     d  pos                           5u 0
+     d  formula                      50a   varying
+     d  lFormula                       *   inz(*null)
       //‚get format from list
      d fmt_getFormat   pr              *
      d  lFormats                       *

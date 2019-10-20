@@ -326,19 +326,16 @@
          return *null;
        endIf;
        pParent=Link.parent;
-
-       dow 1=1;
-         pLink=Link.next;
-         if pLink=parent.first;
-           return *null;
-         endif;
-
+       pLink=Link.next;
+       dow pLink<>parent.first;
          if tree_Validator(pLink:pValidator:isValid)=1;
            return pLink;
          elseif isValid=-1;
            return *null;
          endif;
+         pLink=Link.next;
        endDo;
+       return *null;
      p                 e
       //‚-----------------------------------------------------------------------
       //‚get previous link
@@ -418,61 +415,20 @@
      p                 b                   export
      d tree_getNextToDisplay...
      d                 pi              *
+     d  pRoot                          *   const
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
 
+     d pValidator      s               *   procptr inz(*null)
      d pX              s               *
-       pX=tree_getFirstToDisplay(pLink_);
+       if %parms()=%parmnum(pValidator_);
+         pValidator=pValidator_;
+       endIf;
+       pX=tree_getFirstToDisplay(pLink_:pValidator);
        if pX<>*null;
          return pX;
        endIf;
-       return tree_getNextOrAncestorNext(pLink_);
-     p                 e
-      //‚------------------------------------------------------------------- ---
-      //‚get my next or my ancestor next
-      //‚------------------------------------------------------------------- ---
-     p tree_getNextOrAncestorNext...
-     p                 b
-     d tree_getNextOrAncestorNext...
-     d                 pi              *
-     d  pLink_                         *   const
-     dLink             ds                  likeDs(tLink) based(pLink)
-     dpX               s               *
-       if pLink_=*null;
-         return *null;
-       endIf;
-       pLink=pLink_;
-       ///
-       if Link.level=0;
-         return *null;
-       endif;
-       ///
-       pX=tree_getNext(pLink);
-       if pX<>*null;
-         return pX;
-       endIf;
-
-       pX=tree_getParentToDisplay(pLink);
-       if pX=*null;
-         return *null;
-       endIf;
-       return tree_getNextOrAncestorNext(pX);
-     p                 e
-      //‚-----------------------------------------------------------------------
-      //‚get parent to display
-      //‚-----------------------------------------------------------------------
-     p tree_getParentToDisplay...
-     p                 b
-     d tree_getParentToDisplay...
-     d                 pi              *
-     d  pLink_                         *   const
-
-     dLink             ds                  likeDs(tLink) based(pLink)
-       pLink=pLink_;
-
-       if Link.Parent=*null;
-         return *null;
-       endIf;
-       return Link.parent;
+       return tree_getNextOrAncestorNext(pRoot:pLink_:pValidator);
      p                 e
       //‚-----------------------------------------------------------------------
       //‚get the first link to display
@@ -482,8 +438,14 @@
      d tree_getFirstToDisplay...
      d                 pi              *
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
 
      dLink             ds                  likeDs(tLink) based(pLink)
+     d pValidator      s               *   procptr inz(*null)
+     d  isValid        s              3i 0
+       if %parms()=%parmnum(pValidator_);
+         pValidator=pValidator_;
+       endIf;
        if pLink_=*null;
          return *null;
        endif;
@@ -492,7 +454,62 @@
          return *null;
        endIf;
        //
-       return Link.first;
+       pLink=Link.first;
+       if tree_Validator(pLink:pValidator:isValid)=1;
+         return pLink;
+       elseif isValid=-1;
+         return *null;
+       else;
+         return tree_getNext(pLink:pValidator);
+       endIf;
+     p                 e
+      //‚------------------------------------------------------------------- ---
+      //‚get my next or my ancestor next
+      //‚------------------------------------------------------------------- ---
+     ptree_getNextOrAncestorNext...
+     p                 b
+     d tree_getNextOrAncestorNext...
+     d                 pi              *
+     d  pRoot                          *   const
+     d  pLink_                         *   const
+     d  pValidator                     *   const procptr
+     dLink             ds                  likeDs(tLink) based(pLink)
+     dpX               s               *
+       if pLink_=*null;
+         return *null;
+       endIf;
+       pLink=pLink_;
+       ///if pLink=pRoot;
+       ///  return *null;
+       ///endif;
+       pX=tree_getNext(pLink:pValidator);
+       if pX<>*null;
+         return pX;
+       endIf;
+
+       pX=tree_getParentToDisplay(pRoot:pLink);
+       if pX=*null;
+         return *null;
+       endIf;
+       return tree_getNextOrAncestorNext(pRoot:pX:pValidator);
+     p                 e
+      //‚-----------------------------------------------------------------------
+      //‚get parent to display
+      //‚-----------------------------------------------------------------------
+     p tree_getParentToDisplay...
+     p                 b
+     d tree_getParentToDisplay...
+     d                 pi              *
+     d  pRoot                          *   const
+     d  pLink_                         *   const
+
+     dLink             ds                  likeDs(tLink) based(pLink)
+       pLink=pLink_;
+
+       if Link.parent=pRoot;
+         return *null;
+       endIf;
+       return Link.parent;
      p                 e
       //‚-----------------------------------------------------------------------
       //‚get previous row to display
@@ -501,17 +518,23 @@
      p                 b                   export
      d tree_getPrevToDisplay...
      d                 pi              *
+     d  pRoot                          *   const
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
 
      dLink             ds                  likeDs(tLink) based(pLink)
      dParent           ds                  likeDs(tLink) based(pParent)
      d pX              s               *
-       pLink=pLink_;
-       pX=tree_getPrev(pLink);
-       if pX<>*null;
-         return tree_getLastOfLastToDisplay(pX);
+     d pValidator      s               *   procptr inz(*null)
+       if %parms()=%parmnum(pValidator_);
+         pValidator=pValidator_;
        endIf;
-       return tree_getParentToDisplay(pLink);
+       pLink=pLink_;
+       pX=tree_getPrev(pLink:pValidator);
+       if pX<>*null;
+         return tree_getLastOfLastToDisplay(pX:pValidator);
+       endIf;
+       return tree_getParentToDisplay(pRoot:pLink);
      p                 e
       //‚-------------------------------------------------------------------*
       //‚get the last of last to display
@@ -521,13 +544,18 @@
      d tree_getLastOfLastToDisplay...
      d                 pi              *
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
 
      dLink             ds                  likeDs(tLink) based(pLink)
      d pX              s               *
+     d pValidator      s               *   procptr inz(*null)
+       if %parms()=%parmnum(pValidator_);
+         pValidator=pValidator_;
+       endIf;
        pLink=pLink_;
-       pX=tree_GetLastToDisplay(pLink);
+       pX=tree_GetLastToDisplay(pLink:pValidator);
        if pX<>*Null;
-         return tree_getLastOfLastToDisplay(pX);
+         return tree_getLastOfLastToDisplay(pX:pValidator);
        endIf;
        return pLink;
      p                 e
@@ -539,9 +567,11 @@
      d tree_getLastToDisplay...
      d                 pi              *
      d  pLink_                         *   const
+     d  pValidator                     *   const procptr
 
      dLink             ds                  likeDs(tLink) based(pLink)
      dLink2            ds                  likeDs(tLink) based(pLink2)
+     d  isValid        s              3i 0
      d pX              s               *
        if pLink_=*null;
          return *null;
@@ -551,8 +581,13 @@
          return *null;
        endIf;
        pLink2=Link.first;
-       pLink2=Link2.prev;
-       return pLink2;
+       dou pLink2=link.first;
+         pLink2=Link2.prev;
+         if tree_validator(pLink2:pValidator:isValid)=1;
+           return pLink2;
+         endIf;
+       endDo;
+       return *null;
      p                 e
       //‚--------------------------------------------------------------------
       //‚xml --> tree

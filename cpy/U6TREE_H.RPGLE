@@ -79,19 +79,25 @@
       //‚get the next row to sisplay
      d tree_getNextToDisplay...
      d                 pr              *
+     d  pRoot                          *   const
      d  pLink_                         *   const
+   69d  pValidator_                    *   const procptr options(*nopass)
       //‚get the first link to display
      d tree_getFirstToDisplay...
      d                 pr              *
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
       //‚get previous row to display
      d tree_getPrevToDisplay...
      d                 pr              *
+     d  pRoot                          *   const
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
       //‚get the last of last to display
      d tree_getLastOfLastToDisplay...
      d                 pr              *
      d  pLink_                         *   const
+     d  pValidator_                    *   const procptr options(*nopass)
       //‚xml --> tree
      dtree_xml2tree    pr              *
      d path                         255a   varying const

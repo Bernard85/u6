@@ -13,28 +13,19 @@
      d xview_getXView  pi              *
      d  lXViews                        *
      d  lGrids                         *
-     d  lFmts                          *
-     d  ID                           10a   const varying
-     d  fmtID_                       10a   const varying options(*nopass)
+     d  lFmt                           *   const
       *
-     d  fmtID          s             10a   varying
      d  lXView         s               *   inz(*null)
      d  pXView         s               *   inz(*null)
-       //‚if the formatID is not passed take the ID for it
-       if %parms()=4;
-         fmtID=ID;
-       else;
-         fmtID=fmtID_;
-       endif;
+     d  Fmt            ds                  likeDs(tFormat) based(pFmt)
        //‚create the XView anchor if it doesn't exist
        if lXViews=*null;
          lXViews=tree_getnewlink(*null);
        endif;
-       lXView=tree_getLinkFromList(lXViews:kXView:ID);
+       pFmt=tree_getItem(lFmt);
+       lXView=tree_getLinkFromList(lXViews:kXView:fmt.ID);
        if lXView=*null;
-         //‚load new view
-         pXView=xview_loadXView(lGrids:lfmts:ID:fmtID);
-         //‚link to the main tree view
+         pXView=xview_loadXView(lXViews:lGrids:lfmt);
          lXView=tree_getNewLink(pXView);
          tree_linktoparent(lXViews:lXView);
        endIf;
@@ -45,52 +36,35 @@
       //‚--------------------------------------------------------------------
      pxview_loadXView  b                   export
      dxview_loadXView  pi              *
+     d  lXViews                        *   const
      d  lGrids                         *
-     d  lFmts                          *
-     d  ID                           10a   const varying
-     d  fmtID_                       10a   const varying options(*nopass)
+     d  lFmt                           *   const
       *
-     d  fmtID          s             10a   varying
      d  XView          ds                  likeds(tXView) based(pXView)
-     d  lFmt           s               *   inz(*null)
      d  fmt            ds                  likeDs(tFormat) based(pFmt)
      d  lGrid          s               *   inz(*null)
-     d  lVariant       s               *   inz(*null)
+     d  lColumn        s               *   inz(*null)
      d  column         ds                  likeDs(tColumn) based(pColumn)
-     d  subGrid        ds                  likeDs(tSubGrid) based(pSubGrid)
-       //‚if the formatID is not passed take the ID for it
-       if %parms()=3;
-         fmtID=ID;
-       else;
-         fmtID=fmtID_;
-       endif;
        //‚create the grids anchor if it doesn't exist
        if lGrids=*null;
          lGrids=tree_getnewlink(*null);
        endif;
-       //‚create the formats anchor if it doesn't exist
-       if lFmts=*null;
-         lFmts=tree_getnewlink(*null);
-       endif;
+       pFmt=tree_getItem(lFmt);
        //‚create the new item xView
        pXView=tree_getNewItem(%addr(tXView):%size(tXView));
-       XView.ID=ID;
+       XView.ID=fmt.ID;
        //‚Load corresponding format
-       XView.lfmt=fmt_getFormat(lFmts:fmtID);
-       pFmt=tree_getItem(XView.lFmt);
+       XView.lfmt=lFmt;
        fmt.pBuffer1=%alloc(fmt.len);
        fmt.pBuffer0=%alloc(fmt.len);
        //‚Load corresponding grid
-       XView.lGrid=grid_getGrid(lGrids:fmtID);
-       //‚Resolve formulas
-       lVariant=tree_getFirst(XView.lGrid);
-       dow lVariant<>*null;
-         if tree_isofthekind(kColumn:lVariant:pColumn);
-           column.lFormula=int_loadFormula(column.formula:XView.lFmt);
-       //elseif tree_isofthekind(lVariant:kSubGrid:pSubGrid);
-       //  subGrid.lFormula=int_loadFormula(column.formula:XView.lFmt);
-         endIf;
-         lVariant=tree_getNext(lVariant);
+       XView.lGrid=grid_getGrid(lGrids:fmt.ID);
+       //‚Load formulas
+       lColumn=tree_getFirst(XView.lGrid);
+       dow lColumn<>*null;
+         pColumn=tree_getItem(lColumn);
+         column.lFormula=int_FormulaLoad(column.formula:lFmt);
+         lColumn=tree_getNext(lColumn);
        endDo;
        return pXView;
      p                 e
@@ -210,9 +184,9 @@
          lColumn=tree_getNext(lColumn);
        endDo;
        XView.right.most=*on;
-       if not XView.left.most;
-         xview_setLeftColumn(XView:width_);
-       endif;
+       ///if not XView.left.most;
+       ///  xview_setLeftColumn(XView:width_);
+       ///endif;
      p                 e
       //‚--------------------------------------------------------------------
       //‚tabulation at left
@@ -433,8 +407,7 @@
        //‚Resolve formulas
        lColumn=tree_getFirst(XView.lGrid);
        dow lColumn<>*null;
-         pColumn=tree_getItem(lColumn);
-         column.lFormula=int_loadFormula(column.formula:XView.lFmt);
+         column.lFormula=int_FormulaLoad(column.formula:XView.lFmt);
          lColumn=tree_getNext(lColumn);
        endDo;
        //‚left position in the new grid

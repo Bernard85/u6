@@ -101,24 +101,37 @@
      d jrn_tieEntries  pi
      d  lEntries                       *   const
       *
-     d lEntry1         s               *
-     d Entry1          ds                  likeDs(tEntry) based(pEntry1)
-     d lentry0         s               *
-     d entry0          ds                  likeDs(tEntry) based(pEntry0)
-       lEntry0=tree_getFirst(lEntries);
-       lentry1=tree_getNext (lEntry0);
-       dow lentry0<>*null;
-         pEntry0=tree_getItem(lEntry0);
-         pEntry1=tree_getItem(lEntry1);
-         //
-         if (entry0.det.entt='UB' and entry1.det.entt='UP'
-         or entry0.det.entt='BR' and entry1.det.entt='UR')
-         and entry0.det.OBJ  = Entry1.det.OBJ
-         and Entry0.det.ctrr = Entry1.det.ctrr;
-           Entry1.pEntry0=pEntry0;
-         endif;
-         //
-         lEntry0=lEntry1;
-         lEntry1=tree_getNext(lEntry0);
+     d lEntry          s               *
+     d Entry           ds                  likeDs(tEntry) based(pEntry )
+       lEntry=tree_getFirst(lEntries);
+       dow lentry <>*null;
+         pEntry=tree_getItem(lEntry);
+         if entry.det.entt='UP'
+         or entry.det.entt='UR';
+           Entry.pEntry0=jrn_tieEntries2(lEntry);
+         endIf;
+         lEntry=tree_getNext(lEntry);
        endDo;
+     p                 e
+      //‚--------------------------------------------------------------------
+      //‚link entries (part 2)
+      //‚--------------------------------------------------------------------
+     pjrn_tieEntries2  b
+     djrn_tieEntries2  pi              *
+     d lEntry                          *   const
+      *
+     d Entry           ds                  likeDs(tEntry) based(pEntry)
+     d lEntry0         s               *
+     d Entry0          ds                  likeDs(tEntry) based(pEntry0)
+       pEntry=tree_getItem(lEntry);
+       lEntry0=tree_getprev(lEntry);
+       dow lEntry0<>*null;
+         pEntry0=tree_getItem(lEntry0);
+         if entry0.det.OBJ   = Entry.det.OBJ
+         and Entry0.det.ctrr = Entry.det.ctrr;
+           return pEntry0;
+         endif;
+         lEntry0=tree_getprev(lEntry0);
+       endDo;
+       return *null;
      p                 e

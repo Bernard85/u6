@@ -83,12 +83,12 @@
        dow lVariant<>*null;
          if tree_isOfTheKind(kLabel:lVariant:pLabel);
            label.lFormula
-           =int_loadFormula(label.formula:yView.lFmt);
+           =int_FormulaLoad(label.formula:yView.lFmt);
          endIf;
-         lVariant=tree_getNextToDisplay(lVariant);
+         lVariant=tree_getNextToDisplay(yView.lForm:lVariant);
        endDo;
-       //‚put on first segment/label                                         -
-       YView.ArmTop.lVariant=tree_getNextToDisplay(yview.lform);
+       //‚put on first segment/label
+       YView.ArmTop.lVariant=tree_getFirst(yView.lForm);
        YView.ArmTop.segment=0;
        return pYView;
      p                 e

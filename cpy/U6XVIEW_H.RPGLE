@@ -22,15 +22,12 @@
      d xview_getXView  pr              *
      d  lXViews                        *
      d  lGrids                         *
-     d  lFmts                          *
-     d  ID                           10a   const varying
-     d  fmtID_                       10a   const varying options(*nopass)
+     d  lFmt                           *   const
       //‚load view
      dxview_loadXView  pr              *
+     d  lXViews                        *   const
      d  lGrids                         *
-     d  lFmts                          *
-     d  ID                           10a   const varying
-     d  fmtID_                       10a   const varying options(*nopass)
+     d  lFmt                           *   const
       //‚set headers
      d xview_setHdrs   pr           131a   varying
      d  xView                              likeds(tXView)
