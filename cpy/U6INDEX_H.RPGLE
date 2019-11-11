@@ -10,9 +10,8 @@
      d tElement        ds                  qualified
      d  kind                          1    inz(kElement)
      d  ID                           35A   varying
-     d  seq                           5u 0
+     d  seq                           5u 0 inz(0)
      d  text                         50a   varying
-     d  exists                         n
       //‚get item for INDEX family
      dindex_XmlInput...
      d                 pr              *

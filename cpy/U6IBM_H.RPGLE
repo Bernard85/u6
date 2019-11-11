@@ -111,9 +111,9 @@
       //‚Stat on a read item
      D stat            PR            10I 0 ExtProc('stat')
      D   path                          *   value options(*string)
-     D   buf                               likeds(tStat)
+     D   buf                               likeds(tStatDS)
       //‚bounded to stat proc
-     D tStat           DS                  qualified template
+     D tStatDS         DS                  qualified template
      D  mode                         10U 0
      D  ino                          10U 0
      D  nlink                         5U 0

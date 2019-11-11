@@ -10,45 +10,51 @@
       //‚--------------------------------------------------------------------
      pfmt_getFormat    b                   export
      d fmt_getFormat   pi              *
-     d  lFormats                       *
-     d  formatID                     10a   const varying
+     d  lFmts                          *
+     d  fmtID                        10a   const varying
+     d  fAppli                        1a   const options(*nopass)
       *
-     d  lFormat        s               *
-       if lFormats=*null;
-         lformats=tree_getnewlink(
+     d  lFmt           s               *
+       if lFmts=*null;
+         lFmts=tree_getnewlink(
                   tree_getNewItem(%addr(tFormats):%size(tFormats)));
        endif;
-       lFormat=tree_getLinkFromList(lFormats:kFormat:formatID);
-       if lFormat=*null;
-         lFormat=tree_Xml2Tree(env_getFileName(cFmt:formatId)
-                              :%pAddr(Fmt_xmlInput));
-         if lFormat<>*null;
-           fmt_SubFormatsFormulaLoad(lFormat);
-           tree_linktoparent(lFormats:lFormat);
+       lFmt=tree_getLinkFromList(lFmts:kformat:fmtID);
+       if lFmt=*null;
+         if %parms()=%parmNum(fAppli) and fAppli='Y';
+           lFmt=tree_Xml2Tree(env_getAppliPath()+fmtID+'.fmt'
+                                :%pAddr(fmt_xmlInput));
+         else;
+           lFmt=tree_Xml2Tree(env_getClientPath()+fmtID+'.fmt'
+                                :%pAddr(fmt_xmlInput));
+         endIf;
+         if lFmt<>*null;
+           fmt_SubFormatsFormulaLoad(lFmt);
+           tree_linktoparent(lFmts:lFmt);
          endif;
        endIf;
-       return lFormat;
+       return lFmt;
      p                 e
-      //‚------------------------------------------------------------------*
+      //‚-------------------------------------------------------------------
       //‚get item for FORMAT family
       //‚-------------------------------------------------------------------
      pfmt_XmlInput     b                   export
      d fmt_xmlInput    pi              *
      d   ND                                const likeDs(xml_nodeDefine)
       *
-     d   format        ds                  likeds(tFormat)    based(pFormat)
+     d   fmt           ds                  likeds(tformat)    based(pFmt)
      d   fields        ds                  likeds(tFields)    based(pFields)
      d   field         ds                  likeds(tField)     based(pField)
-     d   subFormats    ds                  likeds(tSubFormats)based(pSubFormats)
-     d   subFormat     ds                  likeds(tSubFormat) based(pSubFormat)
+     d   subFmts       ds                  likeds(tSubFormats)based(pSubFmts)
+     d   subFmt        ds                  likeds(tSubFormat) based(pSubFmt)
        if ND.ID='FORMAT';
-         pFormat=tree_getnewitem(%addr(tFormat):%size(tFormat));
-         format.ID    =xml_getAttAsString('ID':ND.atts);
-         format.len   =xml_getAttAsInteger('LEN':ND.atts);
-         format.fldnbr=xml_getAttAsInteger('FLDNBR':ND.atts);
-         format.pBuffer1=*null;
-         format.pBuffer0=*null;
-         return pFormat;
+         pFmt=tree_getnewitem(%addr(tFormat):%size(tFormat));
+         fmt.ID    =xml_getAttAsString('ID':ND.atts);
+         fmt.len   =xml_getAttAsInteger('LEN':ND.atts);
+         fmt.fldnbr=xml_getAttAsInteger('FLDNBR':ND.atts);
+         fmt.pBuffer1=*null;
+         fmt.pBuffer0=*null;
+         return pFmt;
 
        elseIf ND.ID='FIELDS';
          pFields=tree_getnewitem(%addr(tFields):%size(tFields));
@@ -66,14 +72,14 @@
          return pField;
 
        elseIf ND.ID='SUBFORMATS';
-         pSubFormats=tree_getnewitem(%addr(tSubFormats):%size(tSubFormats));
-         return pSubFormats;
+         pSubFmts=tree_getnewitem(%addr(tSubFormats):%size(tSubFormats));
+         return pSubFmts;
 
        elseIf ND.ID='SUBFORMAT';
-         pSubFormat=tree_getnewitem(%addr(tSubFormat):%size(tSubFormat));
-         SubFormat.pos=xml_getAttAsInteger('POS':ND.atts)-1;
-         SubFormat.formula=xml_getAttAsString('FORMULA':ND.atts);
-         return pSubFormat;
+         pSubFmt=tree_getnewitem(%addr(tSubFormat):%size(tSubFormat));
+         SubFmt.pos=xml_getAttAsInteger('POS':ND.atts)-1;
+         SubFmt.formula=xml_getAttAsString('FORMULA':ND.atts);
+         return pSubFmt;
 
        endIf;
        return *null;
@@ -86,18 +92,18 @@
      d   lNode                         *   const
       *
      d   ND            ds                  likeDs(xml_nodeDefine)
-     d   format        ds                  likeds(tFormat)    based(pFormat)
+     d   fmt           ds                  likeds(tFormat)    based(pFmt)
      d   fields        ds                  likeds(tFields)    based(pFields)
      d   field         ds                  likeds(tField)     based(pField)
-     d   subFormats    ds                  likeds(tSubFormats)based(pSubFormats)
-     d   subFormat     ds                  likeds(tSubFormat) based(pSubFormat)
+     d   subFmts       ds                  likeds(tSubformats)based(pSubFmts)
+     d   subFmt        ds                  likeds(tSubformat) based(pSubFmt)
        clear ND;
 
-       if tree_isofthekind(kFormat:lNode:pFormat);
+       if tree_isofthekind(kFormat:lNode:pFmt);
          ND.ID='FORMAT';
-         xml_setAttfromString (ND.atts:'ID':format.ID);
-         xml_setAttfromInteger(ND.atts:'LEN':format.len);
-         xml_setAttfromInteger(ND.atts:'FLDNBR':format.fldnbr);
+         xml_setAttfromString (ND.atts:'ID':fmt.ID);
+         xml_setAttfromInteger(ND.atts:'LEN':fmt.len);
+         xml_setAttfromInteger(ND.atts:'FLDNBR':fmt.fldnbr);
 
        elseIf tree_isofthekind(kFields:lNode:pFields);
          ND.ID='FIELDS';
@@ -114,13 +120,13 @@
          endIf;
          xml_setAttfromInteger(ND.atts:'POS':field.posinbuffer);
 
-       elseIf tree_isofthekind(kSubFormats:lNode:pSubFormats);
+       elseIf tree_isofthekind(kSubFormats:lNode:pSubFmts);
          ND.ID='SUBFORMATS';
 
-       elseIf tree_isofthekind(kSubFormat:lNode:pSubFormat);
+       elseIf tree_isofthekind(kSubFormat:lNode:pSubFmt);
          ND.ID='SUBFORMAT';
-         xml_setAttfromInteger(ND.atts:'POS':SubFormat.pos);
-         xml_setAttfromString (ND.atts:'FORMULA':SubFormat.formula);
+         xml_setAttfromInteger(ND.atts:'POS':SubFmt.pos);
+         xml_setAttfromString (ND.atts:'FORMULA':SubFmt.formula);
 
        endIf;
 
@@ -133,20 +139,20 @@
      p                 b
      d fmt_SubFormatsFormulaLoad...
      d                 pi
-     d  lFormat                        *
+     d  lFmt                           *
       *
-     d  lSubFormats    s               *
-     d  lSubFormat     s               *
-     d  SubFormat      ds                  likeDs(tSubFormat)based(pSubFormat)
+     d  lSubFmts       s               *
+     d  lSubFmt        s               *
+     d  SubFmt         ds                  likeDs(tSubFormat)based(pSubFmt)
       *
-       lSubFormats=tree_getLinkFromList(lFormat:kSubFormats);
-       if lSubFormats=*null;
+       lSubFmts=tree_getLinkFromList(lFmt:kSubformats);
+       if lSubFmts=*null;
          return;
        endif;
-       lSubFormat=tree_getFirst(lSubFormats);
-       dow lSubFormat<>*null;
-         pSubFormat=tree_getItem(lSubFormat);
-         subFormat.lFormula=int_FormulaLoad(subFormat.Formula:lFormat);
-         lSubFormat=tree_getNext(lSubFormat);
+       lSubFmt=tree_getFirst(lSubFmts);
+       dow lSubFmt<>*null;
+         pSubFmt=tree_getItem(lSubFmt);
+         subFmt.lFormula=int_FormulaLoad(subFmt.Formula:lFmt);
+         lSubFmt=tree_getNext(lSubFmt);
        endDo;
      p                 e

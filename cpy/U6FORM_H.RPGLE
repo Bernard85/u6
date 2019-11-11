@@ -30,3 +30,4 @@
      dform_getForm     pr              *
      d  lForms                         *
      d  formID                       10a   const varying
+     d  fAppli                        1a   const options(*nopass)

@@ -57,7 +57,7 @@
        endif;
        lFile=tree_getLinkFromList(lFiles:kFile:fileID);
        if lFile=*null;
-         lFile=tree_Xml2Tree(env_getfilename(cFile:fileId)
+         lFile=tree_Xml2Tree(env_getClientPath+fileId+'.file'
                             :%pAddr(file_XmlInput));
          if lFile<>*null;
            tree_linktoparent(lFiles:lFile);

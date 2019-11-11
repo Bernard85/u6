@@ -81,7 +81,7 @@
      d                 pr              *
      d  pRoot                          *   const
      d  pLink_                         *   const
-   69d  pValidator_                    *   const procptr options(*nopass)
+     d  pValidator_                    *   const procptr options(*nopass)
       //‚get the first link to display
      d tree_getFirstToDisplay...
      d                 pr              *

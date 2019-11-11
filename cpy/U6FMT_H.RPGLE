@@ -44,6 +44,7 @@
      d fmt_getFormat   pr              *
      d  lFormats                       *
      d  formatID                     10a   const varying
+     d  fAppli                        1a   const options(*nopass)
       //‚get item for FORMAT family
      d fmt_xmlInput    pr              *
      d   ND                                const likeDs(xml_nodeDefine)

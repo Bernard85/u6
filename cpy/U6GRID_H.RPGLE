@@ -39,3 +39,4 @@
      d grid_getGrid    pr              *
      d  lgrids                         *
      d  gridID                       10a   const varying
+     d  fAppli                        1a   const options(*nopass)

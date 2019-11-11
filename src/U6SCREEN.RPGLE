@@ -27,9 +27,9 @@
        FK.pFunction=pFunction;
        lFK=tree_getNewLink(pFK);
        tree_LinkToParent(lFKs:lFK);
-       screen_setFKC(lFK:%parms:%parmnum(Libel0):'0':libel0);
-       screen_setFKC(lFK:%parms:%parmnum(Libel1):'1':libel1);
-       screen_setFKC(lFK:%parms:%parmnum(Libel2):'2':libel2);
+       screen_setFKC(lFK:%parms():%parmnum(Libel0):'0':libel0);
+       screen_setFKC(lFK:%parms():%parmnum(Libel1):'1':libel1);
+       screen_setFKC(lFK:%parms():%parmnum(Libel2):'2':libel2);
      p                 e
       //‚--------------------------------------------------------------------
       //‚set new function key
@@ -194,7 +194,7 @@
        endIf;
        pOption=tree_getNewItem(%addr(tOption):%size(tOption));
        Option.ID=ID;
-       if %parms=%parmnum(text);
+       if %parms()=%parmnum(text);
          Option.text=text;
        endIf;
        tree_LinkToParent(lOptions:tree_getNewLink(pOption));

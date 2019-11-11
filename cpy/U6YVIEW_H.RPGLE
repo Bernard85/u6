@@ -18,10 +18,4 @@
      d  lForms                         *
      d  lFmts                          *
      d  ID                           10a   const varying
-     d  fmtID_                       10a   const varying options(*nopass)
-      //‚load vertical view
-     dyview_loadYView  pr              *
-     d  lForms                         *
-     d  lFmts                          *
-     d  ID                           10a   const varying
-     d  fmtID_                       10a   const varying options(*nopass)
+     d  fAppli                        1a   const options(*nopass)

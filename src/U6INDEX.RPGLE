@@ -20,7 +20,6 @@
        elseif ND.ID=iELEMENT;
          pElement=tree_getnewitem(%addr(tElement):%size(tElement));
          element.ID    =xml_getAttAsString ('ID' :ND.atts);
-         element.exists=*OFF;
          element.Seq   =xml_getAttAsInteger('SEQ':ND.atts);
          return pElement;
        endIf;
@@ -43,10 +42,12 @@
          ND.ID=iINDEX;
          pIndex=tree_getItem(lNode);
        elseif tree_getKind(lNode)=kElement;
-         ND.ID=iELEMENT;
          pElement=tree_getItem(lNode);
-         xml_setAttfromInteger(ND.atts:'SEQ':element.seq);
-         xml_setAttfromString(ND.atts:'ID':element.ID);
+         if Element.seq>0;
+           ND.ID=iELEMENT;
+           xml_setAttfromInteger(ND.atts:'SEQ':element.seq);
+           xml_setAttfromString(ND.atts:'ID':element.ID);
+         endIf;
        endIf;
        return ND;
      p                 e

@@ -73,6 +73,7 @@
      d form_getForm    pi              *
      d  lForms                         *
      d  formID                       10a   const varying
+     d  fAppli                        1a   const options(*nopass)
       *
      d  lForm          s               *
        if lForms=*null;
@@ -80,8 +81,13 @@
        endif;
        lForm=tree_getLinkFromList(lForms:kForm:formID);
        if lForm=*null;
-         lForm=tree_Xml2Tree(env_getfilename(cForm:formId)
-                            :%pAddr(FORM_XmlInput));
+         if %parms()=%parmNum(fAppli) and fAppli='Y';
+           lForm=tree_Xml2Tree(env_getAppliPath()+formId+'.form'
+                              :%pAddr(FORM_XmlInput));
+         else;
+           lForm=tree_Xml2Tree(env_getClientPath()+formId+'.form'
+                              :%pAddr(FORM_XmlInput));
+         endIf;
          if lForm<>*null;
            tree_linktoparent(lForms:lForm);
          endif;

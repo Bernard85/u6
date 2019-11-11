@@ -162,7 +162,7 @@
       *
      d pDir            s               *
      D dirEnt          ds                  likeDs(tDirEnt) based(pDirEnt)
-     D statDs          ds                  likeDs(tStat)
+     D statDs          ds                  likeDs(tStatDS)
      d wPath           s            255a   varying
       *
      d procFile        pr                  extproc(pProcFile)

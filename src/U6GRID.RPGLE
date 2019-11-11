@@ -82,6 +82,7 @@
      d grid_getgrid    pi              *
      d  lgrids                         *
      d  gridID                       10a   const varying
+     d  fAppli                        1a   const options(*nopass)
       *
      d  lGrid          s               *   inz(*null)
        if lGrids=*null;
@@ -89,8 +90,13 @@
        endif;
        lGrid=tree_getLinkFromList(lGrids:kGrid:gridID);
        if lGrid=*null;
-         lGrid=tree_Xml2Tree(env_getfilename(cGrid:GridId)
-                            :%pAddr(grid_XmlInput));
+         if %parms()=%parmNum(fAppli) and fAppli='Y';
+           lGrid=tree_Xml2Tree(env_getAppliPath()+GridId+'.grid'
+                              :%pAddr(grid_XmlInput));
+         else;
+           lGrid=tree_Xml2Tree(env_getClientPath()+GridId+'.grid'
+                              :%pAddr(grid_XmlInput));
+         endIf;
          if lGrid<>*null;
            tree_linktoparent(lGrids:lGrid);
          endif;

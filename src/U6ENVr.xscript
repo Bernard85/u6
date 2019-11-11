@@ -1,0 +1,24 @@
+monitor;
+  drop table %0;
+end-monitor;
+
+CREATE TABLE %0
+ (U6MSG1     CHAR(100)
+ ,U6APPPATH  CHAR(50)
+ ,U6CLIPATH  CHAR(50)
+ ,U6JRNPATH  CHAR(50)
+ );
+
+LABEL ON table  %0 IS 'Environment variables';
+
+LABEL ON COLUMN %0.U6MSG1     TEXT IS 'Welcome message';
+LABEL ON COLUMN %0.U6APPPATH  TEXT IS 'Path for application';
+LABEL ON COLUMN %0.U6CLIPATH  TEXT IS 'Path for client';
+LABEL ON COLUMN %0.U6JRNPATH  TEXT IS 'Path for journal analysis';
+
+call filertv ('%0' '' 'N' 'Y' 'Y' 'N' 'Y');
+
+CHGDTAARA DTAARA(U6ENV  (1 100)) VALUE('Hi');
+CHGDTAARA DTAARA(U6ENV (101 50)) VALUE('/home/bernard85/U6/3fg/');
+CHGDTAARA DTAARA(U6ENV (151 50)) VALUE('/home/bernard85/XXXX/3fg/');
+CHGDTAARA DTAARA(U6ENV (201 50)) VALUE('/home/bernard85/XXXX/jrn/');
