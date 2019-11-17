@@ -19,13 +19,15 @@
      d  kind                          1    inz(kEntry)
      d  pEntry0                        *   inz(*null)
      d  det                                likeDs(tJrnEntry)
-     d  lXView                         *
+     d  lXView                         *   inz(*null)
+     d  lYView                         *   inz(*null)
       //˜sub-entry
      d tSubEntry       ds                  qualified
      d  kind                          1    inz(kSubEntry)
      d  fmtID                        10    varying
-     d  pos                           5u 0
-     d  lXView                         *
+     d  pos                           5u 0 inz(0)
+     d  lXView                         *   inz(*null)
+     d  lYView                         *   inz(*null)
       //‚get item from JOURNAL family
      djrn_XMLinput...
      d                 pr              *

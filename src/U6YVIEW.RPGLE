@@ -33,6 +33,9 @@
        if lYView=*null;
          //‚load new view
          pYView=yview_loadYView(lForms:lFmts:fmtID:fAppli);
+         if pYView=*null;
+           return *null;
+         endIf;
          //‚link to the main tree view
          lYView=tree_getNewLink(pYView);
          tree_linktoparent(lYViews:lYView);
@@ -62,13 +65,21 @@
        if lFmts=*null;
          lFmts=tree_getnewlink(*null);
        endif;
-       //‚create the new item YView
+       //‚Load corresponding format
+       lFmt=fmt_getFormat(lFmts:fmtID:fAppli);
+       if lFmt=*null;
+         return *null;
+       endIf;
+       //‚Load corresponding form
+       lForm=form_getForm(lForms:fmtID:fAppli);
+       if lForm=*null;
+         return *null;
+       endIf;
+       //‚Create the new item YView
        pYView=tree_getNewItem(%addr(tYView):%size(tYView));
        YView.ID=fmtID;
-       //‚Load corresponding format
-       YView.lfmt=fmt_getFormat(lFmts:fmtID:fAppli);
-       //‚Lad corresponding form
-       YView.lForm=form_getForm(lForms:fmtID:fAppli);
+       YView.lFmt =lFmt;
+       YView.lForm=lForm;
        //‚Resolve formulas
        lVariant=tree_getFirst(YView.lForm);
        dow lVariant<>*null;

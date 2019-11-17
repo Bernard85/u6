@@ -11,7 +11,7 @@
      d  ID                           10    varying
      d tOmit           ds                  qualified
      d  kind                          1    inz(kOmit)
-     d  ID                           10    varying
+     d  ID                           30    varying
       //‚get item for FILTER family from xml
      dfilter_XmlInput...
      d                 pr              *
