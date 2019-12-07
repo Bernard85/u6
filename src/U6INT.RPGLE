@@ -11,6 +11,24 @@
       //‚-----------------------------------------------------------------------
      d lProcs          s               *
       //‚-----------------------------------------------------------------------
+      //‚Check if string is displayable
+      //‚-----------------------------------------------------------------------
+     pint_chkDisplay   b                   export
+     d int_chkDisplay  pi         65535a   varying
+     d c                            256a   varying const
+     d s_                         65535a   varying const
+      *
+     d s               s          65535a   varying
+     d p               s              5u 0
+       s=s_;
+       p=%check(c:s);
+       dow p>0;
+         %subst(s:p:1)='?';
+         p=%check(c:s:p);
+       endDo;
+       return s;
+     p                 e
+      //‚-----------------------------------------------------------------------
       //‚Populate string with variables
       //‚-----------------------------------------------------------------------
      pint_replaceAll...

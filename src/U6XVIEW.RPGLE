@@ -49,6 +49,7 @@
      d  fAppli                        1a   const
       *
      d  XView          ds                  likeds(tXView) based(pXView)
+     d  lFmt           s               *   inz(*null)
      d  Fmt            ds                  likeDS(tFormat) based(pFmt)
      d  lGrid          s               *   inz(*null)
      d  lColumn        s               *   inz(*null)
@@ -61,16 +62,25 @@
        if lFmts=*null;
          lFmts=tree_getnewlink(*null);
        endif;
+       //‚Load corresponding format
+       lFmt=fmt_getFormat(lFmts:fmtID:fAppli);
+       if lFmt=*null;
+         return *null;
+       endIf;
+       //‚Load corresponding grid
+       lGrid=grid_getGrid(lGrids:fmtID:fAppli);
+       if lGrid=*null;
+         return *null;
+       endIf;
+       //‚Reserve memory for the format
+       pFmt=tree_getItem(lFmt);
+       fmt.pBuffer1=%alloc(fmt.len);
+       fmt.pBuffer0=%alloc(fmt.len);
        //‚create the new item xView
        pXView=tree_getNewItem(%addr(tXView):%size(tXView));
        XView.ID=fmtID;
-       //‚Load corresponding format
-       XView.lfmt=fmt_getFormat(lFmts:fmtID:fAppli);
-       pFmt=tree_getItem(XView.lFmt);
-       fmt.pBuffer1=%alloc(fmt.len);
-       fmt.pBuffer0=%alloc(fmt.len);
-       //‚Load corresponding grid
-       XView.lGrid=grid_getGrid(lGrids:fmtID:fAppli);
+       XView.lFmt =lFmt;
+       XView.lGrid=lGrid;
        //‚Load formulas
        lColumn=tree_getFirst(XView.lGrid);
        dow lColumn<>*null;

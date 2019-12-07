@@ -1,14 +1,14 @@
-      //‚Error                                                              --
+      //‚Error
      dkErr             c                    const('e')
      dtErr             ds                  qualified
      d kind                           1a   inz(kErr)
      d pStr                            *   inz(*null)
-      //‚constante                                                          --
+      //‚constante
      dkCst             c                    const('c')
      dtCst             ds                  qualified
      d kind                           1a   inz(kCst)
      d pStr                            *   inz(*null)
-      //‚procedure                                                          --
+      //‚procedure
      dkProc            c                    const('p')
      dtProc            ds                  qualified
      d kind                           1a   inz(kProc)
@@ -19,6 +19,14 @@
      d maj             c                   const('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
      d num             c                   const('0123456789')
      d spec            c                   const('$%_#')
+     d spec2           c                   const('.<(+|&!$*);¬-/¦,%_>?ø{­}\-
+     d                                     }\÷`:#@''="[]¯¨´±°«»µ~Øéèêà')
+     d colors          c                   const(x'202122232425262728292A2B2C2-
+     d                                     D2E303132333435363738393A3B3C3D3E3F')
+      //‚Check if string is displayable
+     d int_chkDisplay  pr         65535a   varying
+     d c                            256a   varying const
+     d s_                         65535a   varying const
       //‚Populate string with variables
      d int_replaceAll...
      d                 pr           255a   varying
