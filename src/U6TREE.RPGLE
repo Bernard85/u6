@@ -285,22 +285,26 @@
       //‚------------------------------------------------------------------- ---
      ptree_getCurrent  b                   export
      dtree_getCurrent  pi              *
+     d  pRoot                          *   const
      d  pLink                          *   const
      d  pValidator_                    *   const procptr options(*nopass)
       *
      d  pValidator     s               *   procptr inz(*null)
      d  isValid        s              3i 0
+     d  pNext          s               *
         if %parms()=%parmnum(pValidator_);
           pValidator=pValidator_;
         endIf;
 
         if tree_Validator(pLink:pValidator:isValid)=1;
           return pLink;
-        elseif isValid=-1;
-          return *null;
         endIf;
 
-        return tree_getNext(pLink:pValidator);
+        pNext=tree_getNextToDisplay(pRoot:pLink:pValidator);
+        if pNext<>*null;
+          return pNext;
+        endIf;
+        return tree_getPrevToDisplay(pRoot:pLink:pValidator);
      p                 e
       //‚------------------------------------------------------------------- ---
       //‚get next link

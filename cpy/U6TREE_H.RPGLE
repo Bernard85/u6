@@ -62,6 +62,7 @@
      d  pLink_                         *   const
       //‚get current link
      dtree_getCurrent  pr              *
+     d  pRoot                          *   const
      d  pLink                          *   const
      d  pValidator_                    *   const procptr options(*nopass)
       //‚get next link

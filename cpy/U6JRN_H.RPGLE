@@ -3,6 +3,7 @@
       //‚-----------------------------------------------------------------------
      d kJournal        c                   const('J')
      d kEntries        c                   const('E')
+     d kSection        c                   const('S')
      d kEntry          c                   const('e')
      d kSubEntry       c                   const('s')
       //˜journal
@@ -13,6 +14,10 @@
       //˜Entries
      d tEntries        ds                  qualified
      d  kind                          1    inz(kEntries)
+      //˜Section
+     d tSection        ds                  qualified
+     d  kind                          1    inz(kSection)
+     d  text                         50    inz('') varying
       //˜entry
      d tJrnEntry     e ds                  extname(JRNENTRY) qualified template
      d tEntry          ds                  qualified

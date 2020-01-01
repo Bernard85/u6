@@ -18,7 +18,7 @@
      d min             c                   const('abcdefghijklmnopqrstuvwxyz')
      d maj             c                   const('ABCDEFGHIJKLMNOPQRSTUVWXYZ')
      d num             c                   const('0123456789')
-     d spec            c                   const('$%_#')
+     d spec            c                   const('$%_#@')
      d spec2           c                   const('.<(+|&!$*);¬-/¦,%_>?ø{­}\-
      d                                     }\÷`:#@''="[]¯¨´±°«»µ~Øéèêà')
      d colors          c                   const(x'202122232425262728292A2B2C2-

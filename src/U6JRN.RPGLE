@@ -15,6 +15,7 @@
 
      d   journal       ds                  likeds(tjournal) based(pjournal)
      d   entries       ds                  likeds(tEntries) based(pEntries)
+     d   section       ds                  likeds(tSection) based(pSection)
      d   entry         ds                  likeds(tEntry)   based(pEntry)
        if ND.ID='JOURNAL';
          pJournal=tree_getnewitem(%addr(tJournal):%size(tJournal));
@@ -25,6 +26,11 @@
        elseif ND.ID='ENTRIES';
          pEntries=tree_getnewitem(%addr(tEntries):%size(tEntries));
          return pEntries;
+
+       elseif ND.ID='SECTION';
+         pSection=tree_getnewitem(%addr(tSection):%size(tSection));
+         section.text=ND.text;
+         return pSection;
 
        elseif ND.ID='ENTRY';
          pEntry=tree_getnewitem(%addr(tEntry):%size(tEntry));
@@ -62,6 +68,7 @@
      d   ND            ds                  likeDs(xml_nodeDefine)
      d   journal       ds                  likeds(tjournal) based(pjournal)
      d   entries       ds                  likeds(tEntries) based(pEntries)
+     d   section       ds                  likeds(tSection) based(pSection)
      d   entry         ds                  likeds(tEntry)   based(pEntry)
        clear ND;
        if tree_isofthekind(kJournal:lNode:pJournal);
@@ -70,6 +77,9 @@
          xml_setAttfromString(ND.atts:'ID':journal.ID);
        elseif tree_isofthekind(kEntries:lNode:pEntries);
          ND.ID='ENTRIES';
+       elseif tree_isofthekind(kSection:lNode:pSection);
+         ND.ID='SECTION';
+         ND.text=section.text;
        elseif tree_isofthekind(kEntry:lNode:pEntry);
          ND.ID='ENTRY';
          xml_setAttfromInteger(ND.atts:'ASEQ':entry.det.ASeq);
@@ -101,16 +111,15 @@
      d jrn_tieEntries  pi
      d  lEntries                       *   const
       *
-     d lEntry          s               *
+     d lVariant        s               *
      d Entry           ds                  likeDs(tEntry) based(pEntry )
-       lEntry=tree_getFirst(lEntries);
-       dow lentry <>*null;
-         pEntry=tree_getItem(lEntry);
-         if entry.det.entt='UP'
-         or entry.det.entt='UR';
-           Entry.pEntry0=jrn_tieEntries2(lEntry);
+       lVariant=tree_getFirst(lEntries);
+       dow lVariant<>*null;
+         if tree_isofthekind(kEntry:lVariant:pEntry)
+         and(entry.det.entt='UP' or entry.det.entt='UR');
+           Entry.pEntry0=jrn_tieEntries2(lVariant);
          endIf;
-         lEntry=tree_getNext(lEntry);
+         lVariant=tree_getNexttoDisplay(lEntries:lVariant);
        endDo;
      p                 e
       //‚--------------------------------------------------------------------
